@@ -118,9 +118,10 @@
                     <h3 class="font-bold text-emerald-800 mb-1 text-sm sm:text-base"><i class="ph-fill ph-user-circle mr-1"></i> 1. Data Pribadi</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                         <div><label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label><input type="text" id="reg-name" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Program Studi</label><select id="reg-prodi" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option value="Arsitektur">Arsitektur</option><option value="Teknik Lingkungan">Teknik Lingkungan</option><option value="Biologi">Biologi</option><option value="Kimia">Kimia</option><option value="Teknologi Informasi">Teknologi Informasi</option><option value="Teknik Fisika">Teknik Fisika</option></select></div>
                         <div><label class="block text-xs font-semibold text-slate-700 mb-1">Email Aktif</label><input type="email" id="reg-email" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-700 mb-1">No. WhatsApp</label><input type="tel" id="reg-wa" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">NIK (Sesuai KTP)</label><input type="number" id="reg-nik" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-semibold text-slate-700 mb-1">NIK (Sesuai KTP)</label><input type="number" id="reg-nik" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
                     </div>
                 </div>
 
@@ -262,7 +263,18 @@
                 <div id="page-admin-rekap" class="page hidden fade-in">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 gap-4">
                         <div><h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Laporan Rekap Asisten</h2><p class="text-slate-500 text-sm">Daftar seluruh asisten yang aktif/disetujui pada semester ini.</p></div>
-                        <button onclick="exportRekapExcel()" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"><i class="ph ph-file-xls text-xl"></i> Ekspor ke Excel</button>
+                        <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                            <select id="filter-rekap-prodi" onchange="renderAdminRekap()" class="w-full sm:w-auto px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold bg-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                                <option value="all">Semua Prodi</option>
+                                <option value="Arsitektur">Arsitektur</option>
+                                <option value="Teknik Lingkungan">Teknik Lingkungan</option>
+                                <option value="Biologi">Biologi</option>
+                                <option value="Kimia">Kimia</option>
+                                <option value="Teknologi Informasi">Teknologi Informasi</option>
+                                <option value="Teknik Fisika">Teknik Fisika</option>
+                            </select>
+                            <button onclick="exportRekapExcel()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"><i class="ph ph-file-xls text-xl"></i> Ekspor ke Excel</button>
+                        </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="overflow-x-auto"><table class="w-full text-sm text-left whitespace-nowrap" id="table-rekap-excel"><thead class="text-xs text-slate-600 uppercase bg-slate-100 border-b"><tr><th class="px-5 py-4 w-12 text-center">No</th><th class="px-5 py-4">Nama Lengkap</th><th class="px-5 py-4">No. WhatsApp</th><th class="px-5 py-4">Nama Bank</th><th class="px-5 py-4">No. Rekening</th><th class="px-5 py-4">NIK KTP</th><th class="px-5 py-4">NPWP</th></tr></thead><tbody id="table-admin-rekap" class="divide-y divide-slate-100"></tbody></table></div>
@@ -518,7 +530,7 @@
             e.preventDefault(); const btn = document.getElementById('btn-register'); const ori = btn.innerHTML; btn.innerHTML = `<div class="loader inline-block border-t-white"></div> Memproses...`; btn.disabled = true;
             const ktpFile = document.getElementById('reg-ktp').files[0]; const rekFile = document.getElementById('reg-rek-file').files[0];
             let ktpBase64 = ktpFile ? await fileToBase64(ktpFile) : ""; let rekBase64 = rekFile ? await fileToBase64(rekFile) : "";
-            tempRegData = { email: document.getElementById('reg-email').value.trim().toLowerCase(), name: document.getElementById('reg-name').value, wa: document.getElementById('reg-wa').value, nik: document.getElementById('reg-nik').value, npwp: document.getElementById('reg-npwp').value, bankName: document.getElementById('reg-bank').value, bankAcc: document.getElementById('reg-rek').value };
+            tempRegData = { email: document.getElementById('reg-email').value.trim().toLowerCase(), name: document.getElementById('reg-name').value, prodi: document.getElementById('reg-prodi').value, wa: document.getElementById('reg-wa').value, nik: document.getElementById('reg-nik').value, npwp: document.getElementById('reg-npwp').value, bankName: document.getElementById('reg-bank').value, bankAcc: document.getElementById('reg-rek').value };
             const response = await apiCall({ action: 'register', ...tempRegData, ktpBase64, rekBase64 });
             btn.innerHTML = ori; btn.disabled = false;
             if (response.status === 'success') { document.getElementById('otp-email-display').innerText = tempRegData.email; document.getElementById('modal-otp').classList.remove('hidden'); } else { alert("Pesan Sistem: " + response.message); }
@@ -659,16 +671,26 @@
             if(response.status === 'success') { const user = usersDB.find(u => u.id === id); if(user) user.status = 'approved'; renderAdminVerify(); renderAdminDashboard(); renderAdminRekap(); alert("Asisten berhasil disetujui."); } else { alert("Gagal menyetujui asisten."); btnElement.innerHTML = "Setujui"; btnElement.disabled = false; }
         }
         function renderAdminRekap() {
-            const tbody = document.getElementById('table-admin-rekap'); tbody.innerHTML = ''; let activeAssistants = usersDB.filter(u => u.status === 'approved');
-            if(activeAssistants.length === 0) { tbody.innerHTML = `<tr><td colspan=\"7\" class=\"px-5 py-8 text-center text-slate-500\">Belum ada asisten yang disetujui.</td></tr>`; return; }
-            activeAssistants.forEach((a, i) => { tbody.innerHTML += `<tr class=\"hover:bg-slate-50\"><td class=\"px-5 py-3 text-center font-medium\">${i+1}</td><td class=\"px-5 py-3 font-bold text-slate-700\">${a.name}</td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.wa}</td><td class=\"px-5 py-3 font-bold text-emerald-700\">${a.bankName}</td><td class=\"px-5 py-3 font-medium\">${a.bankAcc}</td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.nik}</td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.npwp || '-'}</td></tr>`; });
+            const tbody = document.getElementById('table-admin-rekap'); tbody.innerHTML = ''; 
+            const filterVal = document.getElementById('filter-rekap-prodi').value;
+            let activeAssistants = usersDB.filter(u => u.status === 'approved');
+            if(filterVal !== 'all') activeAssistants = activeAssistants.filter(u => u.prodi === filterVal || (!u.prodi && filterVal === 'Arsitektur'));
+            
+            if(activeAssistants.length === 0) { tbody.innerHTML = `<tr><td colspan=\"7\" class=\"px-5 py-8 text-center text-slate-500\">Belum ada asisten yang disetujui pada prodi ini.</td></tr>`; return; }
+            activeAssistants.forEach((a, i) => { tbody.innerHTML += `<tr class=\"hover:bg-slate-50\"><td class=\"px-5 py-3 text-center font-medium\">${i+1}</td><td class=\"px-5 py-3 font-bold text-slate-700\">${a.name}<br><span class=\"text-xs text-emerald-600 font-semibold\">${a.prodi || 'Arsitektur'}</span></td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.wa}</td><td class=\"px-5 py-3 font-bold text-emerald-700\">${a.bankName}</td><td class=\"px-5 py-3 font-medium\">${a.bankAcc}</td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.nik}</td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.npwp || '-'}</td></tr>`; });
         }
         function exportRekapExcel() {
-            let activeAssistants = usersDB.filter(u => u.status === 'approved'); if(activeAssistants.length === 0) { alert("Tidak ada data untuk diekspor!"); return; }
-            let excelData = [["No", "Nama Lengkap", "Email", "No. WhatsApp", "Nama Bank", "No. Rekening", "NIK KTP", "NPWP"]];
-            activeAssistants.forEach((a, i) => { excelData.push([ i+1, a.name, a.email, a.wa, a.bankName, a.bankAcc, a.nik, a.npwp || '-' ]); });
-            const ws = XLSX.utils.aoa_to_sheet(excelData); ws['!cols'] = [{wch:5}, {wch:25}, {wch:25}, {wch:15}, {wch:12}, {wch:20}, {wch:20}, {wch:20}];
-            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Rekap_Asisten"); XLSX.writeFile(wb, `Rekap_Asisten_${adminSettings.semester}_${adminSettings.tahun.replace('/','-')}.xlsx`);
+            const filterVal = document.getElementById('filter-rekap-prodi').value;
+            let activeAssistants = usersDB.filter(u => u.status === 'approved');
+            if(filterVal !== 'all') activeAssistants = activeAssistants.filter(u => u.prodi === filterVal || (!u.prodi && filterVal === 'Arsitektur'));
+            
+            if(activeAssistants.length === 0) { alert("Tidak ada data untuk diekspor!"); return; }
+            let excelData = [["No", "Nama Lengkap", "Program Studi", "Email", "No. WhatsApp", "Nama Bank", "No. Rekening", "NIK KTP", "NPWP"]];
+            activeAssistants.forEach((a, i) => { excelData.push([ i+1, a.name, a.prodi || 'Arsitektur', a.email, a.wa, a.bankName, a.bankAcc, a.nik, a.npwp || '-' ]); });
+            const ws = XLSX.utils.aoa_to_sheet(excelData); ws['!cols'] = [{wch:5}, {wch:25}, {wch:20}, {wch:25}, {wch:15}, {wch:12}, {wch:20}, {wch:20}, {wch:20}];
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Rekap_Asisten"); 
+            let fileName = `Rekap_Asisten_${filterVal === 'all' ? 'SemuaProdi' : filterVal}_${adminSettings.semester}_${adminSettings.tahun.replace('/','-')}.xlsx`;
+            XLSX.writeFile(wb, fileName);
         }
         function populateAdminSettingsForm() {
             document.getElementById('set-kemen').value = adminSettings.kemen || ""; 
