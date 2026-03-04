@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Asisten Laboratorium - UIN Ar-Raniry</title>
+    <title>Sistem Asisten Laboratorium - UIN Ar-Raniry Banda Aceh</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
@@ -176,6 +176,10 @@
 
         <!-- MAIN CONTENT -->
         <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-slate-50/50 w-full">
+            
+            <!-- Tambahan: Indikator Cloud Sync (Penyimpanan ke Database) -->
+            <div id="cloud-sync-status" class="fixed bottom-6 right-6 px-4 py-2.5 rounded-full shadow-lg text-sm font-bold text-white z-50 transition-all transform flex items-center gap-2 opacity-0 translate-y-5 pointer-events-none"></div>
+
             <header class="lg:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md sticky top-0 z-[45]">
                 <div class="flex items-center gap-2">
                     <div id="mobile-logo-container" class="w-8 h-8 flex items-center justify-center shrink-0">
@@ -552,11 +556,27 @@
             btn.innerHTML = ori; btn.disabled = false;
 
             if (response.status === 'success') {
-                currentUser = response.user; const savedData = localStorage.getItem('asisten_data_' + currentUser.id);
-                if(savedData) { currentUser.data = JSON.parse(savedData); if(!currentUser.data.classes) { currentUser.data = { classes: [{ id: Date.now().toString(), mk: currentUser.data.mk || "Kelas Lama", unit: "01", dosen: currentUser.data.dosen || "-", students: currentUser.data.students || [], absensi: currentUser.data.absensi || {}, jurnal: currentUser.data.jurnal || {} }], prodi: "Arsitektur" }; } } 
-                else { currentUser.data = { classes: [], prodi: "Arsitektur" }; }
-                if(!currentUser.data.prodi) currentUser.data.prodi = "Arsitektur";
+                currentUser = response.user; 
+                
+                // Prioritas Data:
+                // 1. Ambil dari Database (Cloud)
+                // 2. Jika database kosong, ambil dari LocalStorage HP (Migrasi data lama)
+                // 3. Jika semuanya kosong, buat data baru (Asisten baru)
+                let cloudData = currentUser.appData;
+                let localData = localStorage.getItem('asisten_data_' + currentUser.id);
+                
+                if (cloudData && Object.keys(cloudData).length > 0 && cloudData.classes) {
+                    currentUser.data = cloudData;
+                } else if (localData) {
+                    currentUser.data = JSON.parse(localData);
+                    syncLocalData(); // Force backup data lama ke cloud saat berhasil login pertama kali
+                } else {
+                    currentUser.data = { classes: [], prodi: currentUser.prodi || "Arsitektur" };
+                }
+
+                if(!currentUser.data.prodi) currentUser.data.prodi = currentUser.prodi || "Arsitektur";
                 if(currentUser.data.classes.length > 0) activeClassId = currentUser.data.classes[0].id; else activeClassId = null;
+                
                 apiCall({action:'get_admin_data'}).then(res => { 
                     if(res.settings && Object.keys(res.settings).length > 0) {
                         adminSettings = { ...adminSettings, ...res.settings }; 
@@ -591,7 +611,39 @@
             renderSidebar(); if(currentUser.role === 'admin') { nav('admin-dashboard'); populateAdminSettingsForm(); } else { nav('asisten-dashboard'); }
         }
         function logout() { currentUser = null; activeClassId = null; document.getElementById('page-auth').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); }
-        function syncLocalData() { if(currentUser && currentUser.role === 'asisten') localStorage.setItem('asisten_data_' + currentUser.id, JSON.stringify(currentUser.data)); }
+        
+        // Fitur Auto-Save Background (Tanpa loading layar, berjalan senyap)
+        let syncTimeout = null;
+        function syncLocalData() { 
+            if(currentUser && currentUser.role === 'asisten') {
+                // 1. Simpan di perangkat sementara (Agar UI terasa instan tanpa delay)
+                localStorage.setItem('asisten_data_' + currentUser.id, JSON.stringify(currentUser.data)); 
+                
+                // 2. Tampilkan notifikasi sedang menyimpan
+                const syncUI = document.getElementById('cloud-sync-status');
+                syncUI.className = "fixed bottom-6 right-6 px-4 py-2.5 rounded-full shadow-lg text-xs font-bold text-white z-50 transition-all transform flex items-center gap-2 bg-amber-500 opacity-100 translate-y-0";
+                syncUI.innerHTML = `<div class="loader w-3 h-3 border-[2px] border-t-white"></div> Menyimpan ke Database...`;
+
+                // 3. Tunda API call 2 detik untuk menghindari Spam Google Sheet saat asisten klik checkbox secara cepat
+                clearTimeout(syncTimeout);
+                syncTimeout = setTimeout(async () => {
+                    try {
+                        const response = await apiCall({ action: 'sync_asisten_data', id: currentUser.id, appData: currentUser.data });
+                        if(response.status === 'success') {
+                            syncUI.className = "fixed bottom-6 right-6 px-4 py-2.5 rounded-full shadow-lg text-xs font-bold text-white z-50 transition-all transform flex items-center gap-2 bg-emerald-500 opacity-100 translate-y-0";
+                            syncUI.innerHTML = `<i class="ph-bold ph-cloud-check text-base"></i> Tersimpan di Cloud`;
+                            setTimeout(() => { syncUI.classList.replace('opacity-100', 'opacity-0'); syncUI.classList.replace('translate-y-0', 'translate-y-5'); }, 2000);
+                        } else {
+                            syncUI.className = "fixed bottom-6 right-6 px-4 py-2.5 rounded-full shadow-lg text-xs font-bold text-white z-50 transition-all transform flex items-center gap-2 bg-red-500 opacity-100 translate-y-0";
+                            syncUI.innerHTML = `<i class="ph-bold ph-warning text-base"></i> Gagal Sinkron`;
+                        }
+                    } catch(e) {
+                        syncUI.className = "fixed bottom-6 right-6 px-4 py-2.5 rounded-full shadow-lg text-xs font-bold text-white z-50 transition-all transform flex items-center gap-2 bg-slate-800 opacity-100 translate-y-0";
+                        syncUI.innerHTML = `<i class="ph-bold ph-wifi-slash text-base"></i> Anda Offline. Disimpan di lokal.`;
+                    }
+                }, 2000);
+            } 
+        }
 
         // ================= NAVIGATION =================
         function renderSidebar() {
