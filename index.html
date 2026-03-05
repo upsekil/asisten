@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Asisten Laboratorium - UIN Ar-Raniry Banda Aceh</title>
+    <title>Sistem Asisten Laboratorium - UIN Ar-Raniry</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
@@ -373,9 +373,10 @@
                     <div class="bg-emerald-50/50 p-5 sm:p-6 rounded-3xl shadow-inner border border-emerald-100 mb-8">
                         <h3 class="font-bold text-emerald-800 mb-4 flex items-center gap-2"><i class="ph-fill ph-plus-circle text-xl"></i> Buat Kelas Baru</h3>
                         <form onsubmit="addClass(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                            <div class="md:col-span-5"><label class="block text-xs font-bold text-slate-700 mb-1.5">Mata Kuliah Studio</label><input type="text" id="add-class-mk" required placeholder="Contoh: Studio Perancangan 1" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                            <div class="md:col-span-5"><label class="block text-xs font-bold text-slate-700 mb-1.5">Mata Kuliah Studio/Lab</label><input type="text" id="add-class-mk" required placeholder="Contoh: Studio Perancangan 1" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
                             <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-700 mb-1.5">Unit Kelas</label><input type="text" id="add-class-unit" required placeholder="Contoh: 01 / A" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
-                            <div class="md:col-span-5"><label class="block text-xs font-bold text-slate-700 mb-1.5">Dosen Pengampu</label><input type="text" id="add-class-dosen" required placeholder="Nama Lengkap & Gelar" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                            <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-700 mb-1.5">Jml Pertemuan</label><select id="add-class-meetings" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"><option value="16">16 Kali</option><option value="8">8 Kali</option></select></div>
+                            <div class="md:col-span-3"><label class="block text-xs font-bold text-slate-700 mb-1.5">Dosen Pengampu</label><input type="text" id="add-class-dosen" required placeholder="Nama Lengkap & Gelar" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
                             <div class="md:col-span-12 flex justify-end mt-2"><button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md active:scale-95">Simpan Kelas</button></div>
                         </form>
                     </div>
@@ -412,7 +413,7 @@
                 <!-- ASISTEN: ABSENSI -->
                 <div id="page-absensi" class="page hidden fade-in">
                     <div id="absensi-content-area">
-                        <div class="mb-5 sm:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Absensi Kehadiran</h2><p class="text-slate-500 text-xs sm:text-sm">Centang kotak P1-P16 untuk kehadiran kelas ini.</p></div>
+                        <div class="mb-5 sm:mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Absensi Kehadiran</h2><p class="text-slate-500 text-xs sm:text-sm">Centang kotak pertemuan untuk kehadiran mahasiswa di kelas ini.</p></div>
                         <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col max-h-[70vh]">
                             <div class="overflow-x-auto overflow-y-auto custom-scroll flex-1"><table class="w-full text-sm text-left whitespace-nowrap min-w-max"><thead class="bg-slate-100 border-b border-slate-200 text-slate-600 text-xs font-bold sticky top-0 z-30 shadow-sm" id="absensi-header"></thead><tbody id="table-absensi" class="divide-y divide-slate-100"></tbody></table></div>
                         </div>
@@ -795,19 +796,19 @@
             let totalMhs = 0; cls.forEach(c => totalMhs += c.students.length); document.getElementById('dash-asisten-total-mhs').innerText = totalMhs;
             const list = document.getElementById('dashboard-class-list'); list.innerHTML = '';
             if(cls.length === 0) { list.innerHTML = `<div class=\"col-span-full text-center py-10 bg-white rounded-2xl border border-slate-200\"><p class=\"text-slate-500\">Belum ada kelas yang didaftarkan.</p></div>`; } 
-            else { cls.forEach(c => { let completedJurnal = Object.values(c.jurnal).filter(j => j.status === 'tuntas').length; list.innerHTML += `<div class=\"bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col\"><div class=\"flex justify-between items-start mb-3\"><div><span class=\"bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded\">Unit ${c.unit}</span></div><button onclick=\"activeClassId='${c.id}'; nav('absensi')\" class=\"text-xs bg-slate-100 hover:bg-slate-200 font-semibold px-3 py-1.5 rounded-lg text-slate-700 transition-colors\">Buka Kelas</button></div><h4 class=\"font-bold text-lg leading-tight mb-1 text-slate-800\">${c.mk}</h4><p class=\"text-sm text-slate-500 mb-4\"><i class=\"ph-fill ph-chalkboard-teacher mr-1\"></i> ${c.dosen}</p><div class=\"mt-auto grid grid-cols-2 gap-2 border-t border-slate-100 pt-3\"><div class=\"text-center\"><p class=\"text-[10px] text-slate-400 font-bold uppercase tracking-wide\">MHS</p><p class=\"font-bold text-slate-700\">${c.students.length}</p></div><div class=\"text-center\"><p class=\"text-[10px] text-slate-400 font-bold uppercase tracking-wide\">JURNAL SELESAI</p><p class=\"font-bold text-emerald-600\">${completedJurnal}/16</p></div></div></div>`; }); }
+            else { cls.forEach(c => { let meetings = c.meetings || 16; let completedJurnal = Object.values(c.jurnal).filter(j => j && j.status === 'tuntas').length; list.innerHTML += `<div class=\"bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col\"><div class=\"flex justify-between items-start mb-3\"><div><span class=\"bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded\">Unit ${c.unit}</span></div><button onclick=\"activeClassId='${c.id}'; nav('absensi')\" class=\"text-xs bg-slate-100 hover:bg-slate-200 font-semibold px-3 py-1.5 rounded-lg text-slate-700 transition-colors\">Buka Kelas</button></div><h4 class=\"font-bold text-lg leading-tight mb-1 text-slate-800\">${c.mk}</h4><p class=\"text-sm text-slate-500 mb-4\"><i class=\"ph-fill ph-chalkboard-teacher mr-1\"></i> ${c.dosen}</p><div class=\"mt-auto grid grid-cols-2 gap-2 border-t border-slate-100 pt-3\"><div class=\"text-center\"><p class=\"text-[10px] text-slate-400 font-bold uppercase tracking-wide\">MHS</p><p class=\"font-bold text-slate-700\">${c.students.length}</p></div><div class=\"text-center\"><p class=\"text-[10px] text-slate-400 font-bold uppercase tracking-wide\">JURNAL SELESAI</p><p class=\"font-bold text-emerald-600\">${completedJurnal}/${meetings}</p></div></div></div>`; }); }
         }
         function addClass(e) {
-            e.preventDefault(); const mk = document.getElementById('add-class-mk').value; const unit = document.getElementById('add-class-unit').value; const dosen = document.getElementById('add-class-dosen').value;
-            let initialJurnal = {}; for(let i=1; i<=16; i++) initialJurnal[i] = {kegiatan: '', status: ''};
-            const newClass = { id: 'C'+Date.now(), mk, unit, dosen, students: [], absensi: {}, jurnal: initialJurnal };
+            e.preventDefault(); const mk = document.getElementById('add-class-mk').value; const unit = document.getElementById('add-class-unit').value; const dosen = document.getElementById('add-class-dosen').value; const meetings = parseInt(document.getElementById('add-class-meetings').value);
+            let initialJurnal = {}; for(let i=1; i<=meetings; i++) initialJurnal[i] = {kegiatan: '', status: ''};
+            const newClass = { id: 'C'+Date.now(), mk, unit, dosen, meetings, students: [], absensi: {}, jurnal: initialJurnal };
             currentUser.data.classes.push(newClass); activeClassId = newClass.id; syncLocalData();
-            document.getElementById('add-class-mk').value = ''; document.getElementById('add-class-unit').value = ''; document.getElementById('add-class-dosen').value = ''; renderAsistenKelas(); renderAsistenDashboard(); alert(`Kelas ${mk} Unit ${unit} ditambahkan!`);
+            document.getElementById('add-class-mk').value = ''; document.getElementById('add-class-unit').value = ''; document.getElementById('add-class-dosen').value = ''; renderAsistenKelas(); renderAsistenDashboard(); alert(`Kelas ${mk} Unit ${unit} (${meetings} Pertemuan) ditambahkan!`);
         }
         function renderAsistenKelas() {
             const tb = document.getElementById('table-classes'); tb.innerHTML = ''; const cls = currentUser.data.classes;
             if(cls.length === 0) { tb.innerHTML = `<tr><td colspan=\"4\" class=\"px-6 py-8 text-center text-slate-500\">Data kelas kosong.</td></tr>`; return; }
-            cls.forEach((c, i) => { tb.innerHTML += `<tr class=\"hover:bg-slate-50 transition-colors\"><td class=\"px-4 sm:px-6 py-4 font-bold text-slate-700\">${c.mk}</td><td class=\"px-4 sm:px-6 py-4 text-center\"><span class=\"bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded text-xs\">Unit ${c.unit}</span></td><td class=\"px-4 sm:px-6 py-4 font-medium text-sm\">${c.dosen}</td><td class=\"px-4 sm:px-6 py-4 text-center\"><button onclick=\"deleteClass('${c.id}')\" class=\"text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-2 rounded-xl transition-colors shadow-sm\"><i class=\"ph ph-trash text-lg\"></i></button></td></tr>`; });
+            cls.forEach((c, i) => { tb.innerHTML += `<tr class=\"hover:bg-slate-50 transition-colors\"><td class=\"px-4 sm:px-6 py-4 font-bold text-slate-700\">${c.mk}</td><td class=\"px-4 sm:px-6 py-4 text-center\"><span class=\"bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded text-xs\">Unit ${c.unit}</span><p class="text-[10px] text-slate-500 mt-0.5">${c.meetings || 16}x Pert.</p></td><td class=\"px-4 sm:px-6 py-4 font-medium text-sm\">${c.dosen}</td><td class=\"px-4 sm:px-6 py-4 text-center\"><button onclick=\"deleteClass('${c.id}')\" class=\"text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-2 rounded-xl transition-colors shadow-sm\"><i class=\"ph ph-trash text-lg\"></i></button></td></tr>`; });
         }
         function deleteClass(id) { if(confirm("Yakin ingin menghapus kelas ini beserta seluruh isinya?")) { currentUser.data.classes = currentUser.data.classes.filter(c => c.id !== id); if(activeClassId === id) activeClassId = currentUser.data.classes.length > 0 ? currentUser.data.classes[0].id : null; syncLocalData(); renderAsistenKelas(); renderAsistenDashboard(); } }
 
@@ -830,26 +831,27 @@
 
         window.toggleAllAbs = function(p, isChecked) { const ac = getActiveClass(); if(!ac) return; ac.students.forEach(m => { ac.absensi[`${m.nim}_${p}`] = isChecked ? 'V' : ''; }); syncLocalData(); renderAbs();  };
         function renderAbsensiHeader() {
+            const ac = getActiveClass(); if(!ac) return; const meetings = ac.meetings || 16;
             let headerHtml = `<th class=\"px-3 sm:px-4 py-3 sm:py-4 border-r w-10 sm:w-12 text-center bg-slate-100 z-20\">No</th><th class=\"px-3 sm:px-4 py-3 sm:py-4 border-r min-w-[150px] sm:min-w-[180px] bg-slate-100 z-20\">Nama Mahasiswa</th>`;
-            for(let i=1; i<=16; i++) { headerHtml += `<th class=\"px-1 py-3 sm:py-4 border-r text-center w-10 sm:w-12\"><div class=\"flex flex-col items-center gap-1 sm:gap-1.5 justify-center\"><span class=\"text-[10px] sm:text-xs font-bold text-slate-500\">P${i}</span><input type=\"checkbox\" class=\"w-4 h-4 sm:w-4 sm:h-4 accent-emerald-600 cursor-pointer shadow-sm border-slate-300 rounded\" onchange=\"toggleAllAbs(${i}, this.checked)\" title=\"Centang Semua P${i}\"></div></th>`; }
+            for(let i=1; i<=meetings; i++) { headerHtml += `<th class=\"px-1 py-3 sm:py-4 border-r text-center w-10 sm:w-12\"><div class=\"flex flex-col items-center gap-1 sm:gap-1.5 justify-center\"><span class=\"text-[10px] sm:text-xs font-bold text-slate-500\">P${i}</span><input type=\"checkbox\" class=\"w-4 h-4 sm:w-4 sm:h-4 accent-emerald-600 cursor-pointer shadow-sm border-slate-300 rounded\" onchange=\"toggleAllAbs(${i}, this.checked)\" title=\"Centang Semua P${i}\"></div></th>`; }
             document.getElementById('absensi-header').innerHTML = `<tr>${headerHtml}</tr>`;
         }
         function renderAbs() {
-            const ac = getActiveClass(); if(!ac) return; const tb = document.getElementById('table-absensi'); tb.innerHTML = '';
+            const ac = getActiveClass(); if(!ac) return; const tb = document.getElementById('table-absensi'); tb.innerHTML = ''; const meetings = ac.meetings || 16;
             ac.students.forEach((m, i) => {
                 let row = `<tr><td class=\"px-3 sm:px-4 py-3 sm:py-3.5 border-r text-center text-xs sm:text-sm bg-white\">${i+1}</td><td class=\"px-3 sm:px-4 py-3 sm:py-3.5 border-r text-xs sm:text-sm truncate max-w-[120px] sm:max-w-[150px] font-semibold text-slate-700 bg-white\" title=\"${m.nama}\">${m.nama}</td>`;
-                for(let p=1; p<=16; p++) { let isChecked = ac.absensi[`${m.nim}_${p}`] === 'V'; row += `<td class=\"px-1 py-3 sm:py-3.5 border-r text-center hover:bg-emerald-50 transition-colors cursor-pointer bg-white\" onclick=\"toggleAbs('${m.nim}', ${p})\"><input type=\"checkbox\" class=\"w-5 h-5 sm:w-4 sm:h-4 accent-emerald-600 pointer-events-none rounded shadow-sm border-slate-300\" ${isChecked ? 'checked' : ''}></td>`; } tb.innerHTML += row + `</tr>`;
+                for(let p=1; p<=meetings; p++) { let isChecked = ac.absensi[`${m.nim}_${p}`] === 'V'; row += `<td class=\"px-1 py-3 sm:py-3.5 border-r text-center hover:bg-emerald-50 transition-colors cursor-pointer bg-white\" onclick=\"toggleAbs('${m.nim}', ${p})\"><input type=\"checkbox\" class=\"w-5 h-5 sm:w-4 sm:h-4 accent-emerald-600 pointer-events-none rounded shadow-sm border-slate-300\" ${isChecked ? 'checked' : ''}></td>`; } tb.innerHTML += row + `</tr>`;
             });
         }
         window.toggleAbs = function(nim, p) { const ac = getActiveClass(); if(!ac) return; let isV = ac.absensi[`${nim}_${p}`] === 'V'; ac.absensi[`${nim}_${p}`] = isV ? '' : 'V'; syncLocalData(); renderAbs(); };
 
         function renderJur() {
-            const ac = getActiveClass(); if(!ac) return; const tb = document.getElementById('table-jurnal'); tb.innerHTML = '';
-            for(let i=1; i<=16; i++) {
-                let j = ac.jurnal[i]; tb.innerHTML += `<tr><td class=\"px-2 sm:px-4 py-4 text-center font-bold text-emerald-800 bg-emerald-50/50\">${i}</td><td class=\"px-3 sm:px-4 py-4\"><input type=\"text\" class=\"w-full bg-transparent outline-none border-b border-dashed border-slate-300 focus:border-emerald-500 pb-1 text-sm sm:text-base font-medium\" placeholder=\"Tuliskan materi / kegiatan...\" value=\"${j.kegiatan}\" onchange=\"updateJur(${i}, 'kegiatan', this.value)\"></td><td class=\"px-2 sm:px-4 py-4 text-center\"><div class=\"flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center text-xs sm:text-sm\"><label class=\"cursor-pointer flex items-center gap-1.5 font-semibold text-emerald-700 bg-emerald-50 px-2 sm:px-3 py-1.5 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors\"><input type=\"radio\" name=\"jur_${i}\" ${j.status==='tuntas'?'checked':''} class=\"accent-emerald-600 w-4 h-4 sm:w-4 sm:h-4\" onchange=\"updateJur(${i}, 'status', 'tuntas')\"> Tuntas</label><label class=\"cursor-pointer flex items-center gap-1.5 font-semibold text-red-600 bg-red-50 px-2 sm:px-3 py-1.5 rounded-lg border border-red-100 hover:bg-red-100 transition-colors\"><input type=\"radio\" name=\"jur_${i}\" ${j.status==='tidak'?'checked':''} class=\"accent-red-600 w-4 h-4 sm:w-4 sm:h-4\" onchange=\"updateJur(${i}, 'status', 'tidak')\"> Tidak</label></div></td></tr>`;
+            const ac = getActiveClass(); if(!ac) return; const tb = document.getElementById('table-jurnal'); tb.innerHTML = ''; const meetings = ac.meetings || 16;
+            for(let i=1; i<=meetings; i++) {
+                let j = ac.jurnal[i] || {kegiatan: '', status: ''}; tb.innerHTML += `<tr><td class=\"px-2 sm:px-4 py-4 text-center font-bold text-emerald-800 bg-emerald-50/50\">${i}</td><td class=\"px-3 sm:px-4 py-4\"><input type=\"text\" class=\"w-full bg-transparent outline-none border-b border-dashed border-slate-300 focus:border-emerald-500 pb-1 text-sm sm:text-base font-medium\" placeholder=\"Tuliskan materi / kegiatan...\" value=\"${j.kegiatan}\" onchange=\"updateJur(${i}, 'kegiatan', this.value)\"></td><td class=\"px-2 sm:px-4 py-4 text-center\"><div class=\"flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center text-xs sm:text-sm\"><label class=\"cursor-pointer flex items-center gap-1.5 font-semibold text-emerald-700 bg-emerald-50 px-2 sm:px-3 py-1.5 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors\"><input type=\"radio\" name=\"jur_${i}\" ${j.status==='tuntas'?'checked':''} class=\"accent-emerald-600 w-4 h-4 sm:w-4 sm:h-4\" onchange=\"updateJur(${i}, 'status', 'tuntas')\"> Tuntas</label><label class=\"cursor-pointer flex items-center gap-1.5 font-semibold text-red-600 bg-red-50 px-2 sm:px-3 py-1.5 rounded-lg border border-red-100 hover:bg-red-100 transition-colors\"><input type=\"radio\" name=\"jur_${i}\" ${j.status==='tidak'?'checked':''} class=\"accent-red-600 w-4 h-4 sm:w-4 sm:h-4\" onchange=\"updateJur(${i}, 'status', 'tidak')\"> Tidak</label></div></td></tr>`;
             }
         }
-        window.updateJur = function(i, field, val) { const ac = getActiveClass(); if(ac) { ac.jurnal[i][field] = val; syncLocalData(); } }
+        window.updateJur = function(i, field, val) { const ac = getActiveClass(); if(ac) { if(!ac.jurnal[i]) ac.jurnal[i] = {}; ac.jurnal[i][field] = val; syncLocalData(); } }
 
         // ================= KOP SURAT GENERATOR =================
         let cachedLogoBase64 = null;
@@ -942,19 +944,21 @@
                 </div>
             `;
 
+            const meetings = ac.meetings || 16;
+
             if(type === 'absensi') {
                 htmlContent += `<table class="w-full border-collapse border border-black text-center mt-3 font-formal"><thead class="bg-gray-100"><tr><th class="border border-black p-2 w-10 text-[10pt]">No</th><th class="border border-black p-2 w-28 text-[10pt]">NIM</th><th class="border border-black p-2 text-left px-3 text-[10pt]">NAMA</th>`;
-                for(let i=1; i<=16; i++) htmlContent += `<th class="border border-black p-2 w-6 text-[10pt]">${i}</th>`; 
+                for(let i=1; i<=meetings; i++) htmlContent += `<th class="border border-black p-2 w-6 text-[10pt]">${i}</th>`; 
                 htmlContent += `</tr></thead><tbody>`;
                 ac.students.forEach((m, idx) => { 
                     htmlContent += `<tr><td class="border border-black p-1.5 text-[10pt]">${idx+1}</td><td class="border border-black p-1.5 text-[10pt] tracking-wide">${m.nim}</td><td class="border border-black p-1.5 text-left px-3 text-[10pt] truncate max-w-[150px]">${m.nama}</td>`; 
-                    for(let i=1; i<=16; i++) htmlContent += `<td class="border border-black p-1.5 font-bold text-[10pt]">${ac.absensi[`${m.nim}_${i}`] || ''}</td>`; 
+                    for(let i=1; i<=meetings; i++) htmlContent += `<td class="border border-black p-1.5 font-bold text-[10pt]">${ac.absensi[`${m.nim}_${i}`] || ''}</td>`; 
                     htmlContent += `</tr>`; 
                 }); 
                 htmlContent += `</tbody></table>`;
             } else {
                 htmlContent += `<table class="w-full border-collapse border border-black mt-3 font-formal"><thead class="bg-gray-100"><tr><th class="border border-black p-2.5 w-16 text-center text-[11pt]" rowspan="2">PERT</th><th class="border border-black p-2.5 text-center text-[11pt]" rowspan="2">JUDUL PRAKTIKUM / KEGIATAN</th><th class="border border-black p-2.5 text-center text-[11pt]" colspan="2">KETERANGAN</th></tr><tr><th class="border border-black p-2 w-24 text-center text-[11pt]">TUNTAS</th><th class="border border-black p-2 w-24 text-center text-[11pt]">TIDAK</th></tr></thead><tbody>`;
-                for(let i=1; i<=16; i++) { let j = ac.jurnal[i]; htmlContent += `<tr><td class="border border-black p-2.5 text-center text-[11pt]">${i}</td><td class="border border-black p-2.5 px-4 text-[11pt]">${j.kegiatan || '-'}</td><td class="border border-black p-2.5 text-center font-bold text-[11pt]">${j.status==='tuntas'?'V':''}</td><td class="border border-black p-2.5 text-center font-bold text-[11pt]">${j.status==='tidak'?'V':''}</td></tr>`; } 
+                for(let i=1; i<=meetings; i++) { let j = ac.jurnal[i] || {kegiatan: '', status: ''}; htmlContent += `<tr><td class="border border-black p-2.5 text-center text-[11pt]">${i}</td><td class="border border-black p-2.5 px-4 text-[11pt]">${j.kegiatan || '-'}</td><td class="border border-black p-2.5 text-center font-bold text-[11pt]">${j.status==='tuntas'?'V':''}</td><td class="border border-black p-2.5 text-center font-bold text-[11pt]">${j.status==='tidak'?'V':''}</td></tr>`; } 
                 htmlContent += `</tbody></table>`;
             }
 
