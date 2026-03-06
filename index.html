@@ -281,7 +281,7 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="overflow-x-auto"><table class="w-full text-sm text-left whitespace-nowrap" id="table-rekap-excel"><thead class="text-xs text-slate-600 uppercase bg-slate-100 border-b"><tr><th class="px-5 py-4 w-12 text-center">No</th><th class="px-5 py-4">Nama Lengkap & Prodi</th><th class="px-5 py-4">Periode</th><th class="px-5 py-4">Nama Bank</th><th class="px-5 py-4">No. Rekening</th><th class="px-5 py-4">Aksi</th></tr></thead><tbody id="table-admin-rekap" class="divide-y divide-slate-100"></tbody></table></div>
+                        <div class="overflow-x-auto"><table class="w-full text-sm text-left whitespace-nowrap" id="table-rekap-excel"><thead class="text-xs text-slate-600 uppercase bg-slate-100 border-b"><tr><th class="px-5 py-4 w-12 text-center">No</th><th class="px-5 py-4">Asisten & Prodi</th><th class="px-5 py-4">Kontak (WA)</th><th class="px-5 py-4">Data Keuangan</th><th class="px-5 py-4">Identitas (NIK/NPWP)</th><th class="px-5 py-4">Periode</th><th class="px-5 py-4 text-center">Aksi</th></tr></thead><tbody id="table-admin-rekap" class="divide-y divide-slate-100"></tbody></table></div>
                     </div>
                 </div>
 
@@ -770,25 +770,21 @@
             if(fSem !== 'all') filtered = filtered.filter(u => u.semester === fSem);
             if(fThn !== 'all') filtered = filtered.filter(u => u.tahun === fThn);
             
-            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan=\"6\" class=\"px-5 py-8 text-center text-slate-500\">Tidak ada data asisten pada filter/arsip ini.</td></tr>`; return; }
+            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan=\"7\" class=\"px-5 py-8 text-center text-slate-500\">Tidak ada data asisten pada filter/arsip ini.</td></tr>`; return; }
             filtered.forEach((a, i) => { 
-                const delBtn = `<button onclick=\"deleteAsisten('${a.id}', '${a.name}')\" class=\"text-red-400 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors shadow-sm\"><i class=\"ph ph-trash text-lg\"></i></button>`;
-                tbody.innerHTML += `<tr class=\"hover:bg-slate-50\"><td class=\"px-5 py-3 text-center font-medium\">${i+1}</td><td class=\"px-5 py-3 font-bold text-slate-700\">${a.name}<br><span class=\"text-xs text-emerald-600 font-semibold\">${a.prodi || 'Arsitektur'}</span></td><td class=\"px-5 py-3 text-sm text-slate-500 font-medium\">${a.semester || '-'}<br>${a.tahun || '-'}</td><td class=\"px-5 py-3 font-bold text-emerald-700\">${a.bankName}</td><td class=\"px-5 py-3 font-medium\">${a.bankAcc}</td><td class=\"px-5 py-3 text-center\">${delBtn}</td></tr>`; 
+                const delBtn = `<button onclick=\"deleteAsisten('${a.id}', '${a.name}')\" class=\"text-red-400 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors shadow-sm\" title=\"Hapus Data\"><i class=\"ph ph-trash text-lg\"></i></button>`;
+                tbody.innerHTML += `<tr class=\"hover:bg-slate-50 border-b border-slate-50\">
+                    <td class=\"px-5 py-3 text-center font-medium\">${i+1}</td>
+                    <td class=\"px-5 py-3 font-bold text-slate-700\">${a.name}<br><span class=\"text-xs text-emerald-600 font-semibold\">${a.prodi || 'Arsitektur'}</span></td>
+                    <td class=\"px-5 py-3 text-sm font-medium text-slate-600\"><i class=\"ph ph-whatsapp\"></i> ${a.wa}</td>
+                    <td class=\"px-5 py-3\"><span class=\"font-bold text-emerald-700\">${a.bankName}</span><br><span class=\"text-sm font-medium\">${a.bankAcc}</span></td>
+                    <td class=\"px-5 py-3 text-sm text-slate-600\"><span class=\"font-semibold text-slate-700\">NIK: ${a.nik}</span><br><span class=\"text-xs\">NPWP: ${a.npwp || '-'}</span></td>
+                    <td class=\"px-5 py-3 text-sm text-slate-500 font-medium\">${a.semester || '-'}<br>${a.tahun || '-'}</td>
+                    <td class=\"px-5 py-3 text-center\">${delBtn}</td>
+                </tr>`; 
             });
         }
-        async function approveAsisten(id, btnElement) {
-            btnElement.innerHTML = "Memproses..."; btnElement.disabled = true; const response = await apiCall({ action: 'approve_asisten', id: id });
-            if(response.status === 'success') { const user = usersDB.find(u => u.id === id); if(user) user.status = 'approved'; renderAdminVerify(); renderAdminDashboard(); renderAdminRekap(); alert("Asisten berhasil disetujui."); } else { alert("Gagal menyetujui asisten."); btnElement.innerHTML = "Setujui"; btnElement.disabled = false; }
-        }
-        function renderAdminRekap() {
-            const tbody = document.getElementById('table-admin-rekap'); tbody.innerHTML = ''; 
-            const filterVal = document.getElementById('filter-rekap-prodi').value;
-            let activeAssistants = usersDB.filter(u => u.status === 'approved');
-            if(filterVal !== 'all') activeAssistants = activeAssistants.filter(u => u.prodi === filterVal || (!u.prodi && filterVal === 'Arsitektur'));
-            
-            if(activeAssistants.length === 0) { tbody.innerHTML = `<tr><td colspan=\"7\" class=\"px-5 py-8 text-center text-slate-500\">Belum ada asisten yang disetujui pada prodi ini.</td></tr>`; return; }
-            activeAssistants.forEach((a, i) => { tbody.innerHTML += `<tr class=\"hover:bg-slate-50\"><td class=\"px-5 py-3 text-center font-medium\">${i+1}</td><td class=\"px-5 py-3 font-bold text-slate-700\">${a.name}<br><span class=\"text-xs text-emerald-600 font-semibold\">${a.prodi || 'Arsitektur'}</span></td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.wa}</td><td class=\"px-5 py-3 font-bold text-emerald-700\">${a.bankName}</td><td class=\"px-5 py-3 font-medium\">${a.bankAcc}</td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.nik}</td><td class=\"px-5 py-3 font-medium text-slate-600\">${a.npwp || '-'}</td></tr>`; });
-        }
+
         function exportRekapExcel() {
             const filterVal = document.getElementById('filter-rekap-prodi').value;
             let activeAssistants = usersDB.filter(u => u.status === 'approved');
