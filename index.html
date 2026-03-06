@@ -259,29 +259,29 @@
                     <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Verifikasi Asisten Laboratorium</h2>
                     <p class="text-slate-500 text-sm mb-4 sm:mb-6">Data diambil secara Real-time dari Google Sheets.</p>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="overflow-x-auto"><table class="w-full text-sm text-left whitespace-nowrap"><thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b"><tr><th class="px-5 py-4 w-24">Status</th><th class="px-5 py-4">Informasi Asisten</th><th class="px-5 py-4 hidden sm:table-cell">Data Identitas</th><th class="px-5 py-4">Rekening Bank & Berkas</th><th class="px-5 py-4 text-center">Aksi</th></tr></thead><tbody id="table-admin-verify" class="divide-y divide-slate-100"></tbody></table></div>
+                        <div class="overflow-x-auto"><table class="w-full text-sm text-left whitespace-nowrap"><thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b"><tr><th class="px-5 py-4 w-24">Status</th><th class="px-5 py-4">Informasi Asisten</th><th class="px-5 py-4 hidden sm:table-cell">Data Identitas</th><th class="px-5 py-4">Rekening Bank & Berkas</th><th class="px-5 py-4 text-center">Aksi (Verif/Hapus)</th></tr></thead><tbody id="table-admin-verify" class="divide-y divide-slate-100"></tbody></table></div>
                     </div>
                 </div>
 
-                <!-- ADMIN: REKAP DATA -->
+                <!-- ADMIN: REKAP DATA & RIWAYAT -->
                 <div id="page-admin-rekap" class="page hidden fade-in">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 gap-4">
-                        <div><h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Laporan Rekap Asisten</h2><p class="text-slate-500 text-sm">Daftar seluruh asisten yang aktif/disetujui pada semester ini.</p></div>
-                        <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                            <select id="filter-rekap-prodi" onchange="renderAdminRekap()" class="w-full sm:w-auto px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold bg-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
-                                <option value="all">Semua Prodi</option>
-                                <option value="Arsitektur">Arsitektur</option>
-                                <option value="Teknik Lingkungan">Teknik Lingkungan</option>
-                                <option value="Biologi">Biologi</option>
-                                <option value="Kimia">Kimia</option>
-                                <option value="Teknologi Informasi">Teknologi Informasi</option>
-                                <option value="Teknik Fisika">Teknik Fisika</option>
+                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-5 gap-4">
+                        <div><h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Laporan Rekap & Riwayat Asisten</h2><p class="text-slate-500 text-sm">Filter berdasarkan Program Studi, Semester, dan Tahun untuk melihat arsip.</p></div>
+                        <div class="flex flex-col sm:flex-row flex-wrap gap-2 w-full xl:w-auto">
+                            <!-- Filter Prodi -->
+                            <select id="filter-rekap-prodi" onchange="renderAdminRekap()" class="w-full sm:w-auto px-3 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold bg-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                                <option value="all">Semua Prodi</option><option value="Arsitektur">Arsitektur</option><option value="Teknik Lingkungan">Teknik Lingkungan</option><option value="Biologi">Biologi</option><option value="Kimia">Kimia</option><option value="Teknologi Informasi">Teknologi Informasi</option><option value="Teknik Fisika">Teknik Fisika</option>
                             </select>
-                            <button onclick="exportRekapExcel()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"><i class="ph ph-file-xls text-xl"></i> Ekspor ke Excel</button>
+                            <!-- Filter Semester (Dinamis dari History) -->
+                            <select id="filter-rekap-semester" onchange="renderAdminRekap()" class="w-full sm:w-auto px-3 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold bg-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"><option value="all">Semua Semester</option></select>
+                            <!-- Filter Tahun (Dinamis dari History) -->
+                            <select id="filter-rekap-tahun" onchange="renderAdminRekap()" class="w-full sm:w-auto px-3 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold bg-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"><option value="all">Semua Tahun</option></select>
+                            
+                            <button onclick="exportRekapExcel()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"><i class="ph ph-file-xls text-xl"></i> Ekspor ke Excel</button>
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="overflow-x-auto"><table class="w-full text-sm text-left whitespace-nowrap" id="table-rekap-excel"><thead class="text-xs text-slate-600 uppercase bg-slate-100 border-b"><tr><th class="px-5 py-4 w-12 text-center">No</th><th class="px-5 py-4">Nama Lengkap</th><th class="px-5 py-4">No. WhatsApp</th><th class="px-5 py-4">Nama Bank</th><th class="px-5 py-4">No. Rekening</th><th class="px-5 py-4">NIK KTP</th><th class="px-5 py-4">NPWP</th></tr></thead><tbody id="table-admin-rekap" class="divide-y divide-slate-100"></tbody></table></div>
+                        <div class="overflow-x-auto"><table class="w-full text-sm text-left whitespace-nowrap" id="table-rekap-excel"><thead class="text-xs text-slate-600 uppercase bg-slate-100 border-b"><tr><th class="px-5 py-4 w-12 text-center">No</th><th class="px-5 py-4">Nama Lengkap & Prodi</th><th class="px-5 py-4">Periode</th><th class="px-5 py-4">Nama Bank</th><th class="px-5 py-4">No. Rekening</th><th class="px-5 py-4">Aksi</th></tr></thead><tbody id="table-admin-rekap" class="divide-y divide-slate-100"></tbody></table></div>
                     </div>
                 </div>
 
@@ -601,6 +601,7 @@
                         if(adminSettings.logoUrl) updateAllLogos(adminSettings.logoUrl);
                     }
                     currentUser = { role: 'admin', name: 'Administrator' };
+                    populateHistoryFilters(); // Mengisi opsi dropdown Filter Arsip
                     startSession();
                 } else { alert("Gagal mengambil data dari server."); }
             } else { alert("Kredensial Admin Salah!"); }
@@ -703,6 +704,19 @@
         function getActiveClass() { return activeClassId ? currentUser.data.classes.find(c => c.id === activeClassId) : null; }
 
         // ================= ADMIN LOGIC: DASHBOARD & REKAP & SETTINGS =================
+        function populateHistoryFilters() {
+            const semSet = new Set(); const thnSet = new Set();
+            usersDB.forEach(u => { if(u.semester && u.semester !== '-') semSet.add(u.semester); if(u.tahun && u.tahun !== '-') thnSet.add(u.tahun); });
+            
+            const semSelect = document.getElementById('filter-rekap-semester');
+            semSelect.innerHTML = '<option value="all">Semua Semester</option>';
+            semSet.forEach(s => semSelect.innerHTML += `<option value="${s}">${s}</option>`);
+            
+            const thnSelect = document.getElementById('filter-rekap-tahun');
+            thnSelect.innerHTML = '<option value="all">Semua Tahun</option>';
+            thnSet.forEach(t => thnSelect.innerHTML += `<option value="${t}">${t}</option>`);
+        }
+
         function renderAdminDashboard() {
             let active = usersDB.filter(u => u.status === 'approved'); let pending = usersDB.filter(u => u.status === 'pending_admin');
             document.getElementById('dash-admin-total').innerText = usersDB.length; document.getElementById('dash-admin-aktif').innerText = active.length; document.getElementById('dash-admin-pending').innerText = pending.length; document.getElementById('dash-admin-bank').innerText = new Set(active.map(u => u.bankName)).size;
@@ -713,10 +727,53 @@
         function renderAdminVerify() {
             const tbody = document.getElementById('table-admin-verify'); tbody.innerHTML = '';
             usersDB.forEach((a, i) => {
-                const isPending = a.status === 'pending_admin'; const badge = isPending ? `<span class=\"bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-xs font-bold border border-amber-200\">Pending</span>` : `<span class=\"bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-200\">Approved</span>`;
-                const actionBtn = isPending ? `<button onclick=\"approveAsisten('${a.id}', this)\" class=\"bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 active:scale-95 shadow\">Setujui</button>` : `<span class=\"text-slate-500 text-xs font-semibold flex items-center justify-center gap-1\"><i class=\"ph-fill ph-check-circle text-emerald-500 text-lg\"></i> Selesai</span>`;
+                const isPending = a.status === 'pending_admin'; 
+                const badge = isPending ? `<span class=\"bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-xs font-bold border border-amber-200\">Pending</span>` : `<span class=\"bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-200\">Approved</span>`;
+                
+                // Modifikasi Aksi untuk memasukkan tombol Delete
+                const actionBtn = isPending ? `<button onclick=\"approveAsisten('${a.id}', this)\" class=\"bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 active:scale-95 shadow mb-1 w-full\">Setujui</button>` : `<span class=\"text-slate-500 text-xs font-semibold flex items-center justify-center gap-1 mb-1\"><i class=\"ph-fill ph-check-circle text-emerald-500 text-lg\"></i> Selesai</span>`;
+                const delBtn = `<button onclick=\"deleteAsisten('${a.id}', '${a.name}')\" class=\"bg-red-50 text-red-600 px-5 py-2 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white shadow-sm transition-colors w-full flex items-center justify-center gap-1\"><i class=\"ph ph-trash\"></i> Hapus</button>`;
+                
                 const links = `<a href=\"${a.ktpUrl}\" target=\"_blank\" class=\"text-blue-500 hover:underline\">Lihat KTP</a> | <a href=\"${a.rekUrl}\" target=\"_blank\" class=\"text-blue-500 hover:underline\">Lihat Rekening</a>`;
-                tbody.innerHTML += `<tr><td class=\"px-5 py-4\">${badge}</td><td class=\"px-5 py-4 font-bold text-slate-700 text-sm sm:text-base\">${a.name}<br><span class=\"text-xs text-slate-500 font-medium mt-1 inline-block\"><i class=\"ph ph-whatsapp\"></i> ${a.wa} | ${a.email}</span></td><td class=\"px-5 py-4 text-xs hidden sm:table-cell text-slate-600\">NIK: <b class=\"text-slate-800\">${a.nik}</b><br>NPWP: ${a.npwp||'-'}</td><td class=\"px-5 py-4 text-xs font-bold text-blue-800 bg-blue-50/50 rounded-lg\"><div class=\"px-2\">${a.bankName} - ${a.bankAcc}<br><span class=\"text-xs font-normal\">${links}</span></div></td><td class=\"px-5 py-4 text-center\">${actionBtn}</td></tr>`;
+                
+                tbody.innerHTML += `<tr><td class=\"px-5 py-4\">${badge}</td><td class=\"px-5 py-4 font-bold text-slate-700 text-sm sm:text-base\">${a.name}<br><span class=\"text-xs text-slate-500 font-medium mt-1 inline-block\"><i class=\"ph ph-whatsapp\"></i> ${a.wa} | ${a.email}</span></td><td class=\"px-5 py-4 text-xs hidden sm:table-cell text-slate-600\">NIK: <b class=\"text-slate-800\">${a.nik}</b><br>NPWP: ${a.npwp||'-'}</td><td class=\"px-5 py-4 text-xs font-bold text-blue-800 bg-blue-50/50 rounded-lg\"><div class=\"px-2\">${a.bankName} - ${a.bankAcc}<br><span class=\"text-xs font-normal\">${links}</span></div></td><td class=\"px-5 py-4 text-center\"><div class=\"flex flex-col gap-1 w-24 mx-auto\">${actionBtn}${delBtn}</div></td></tr>`;
+            });
+        }
+        
+        async function approveAsisten(id, btnElement) {
+            btnElement.innerHTML = "Memproses..."; btnElement.disabled = true; const response = await apiCall({ action: 'approve_asisten', id: id });
+            if(response.status === 'success') { const user = usersDB.find(u => u.id === id); if(user) user.status = 'approved'; renderAdminVerify(); renderAdminDashboard(); renderAdminRekap(); alert("Asisten berhasil disetujui, Email otomatis telah terkirim!"); } else { alert("Gagal menyetujui asisten."); btnElement.innerHTML = "Setujui"; btnElement.disabled = false; }
+        }
+
+        async function deleteAsisten(id, name) {
+            if(confirm(`PERINGATAN!\nYakin ingin MENGHAPUS Asisten: ${name}?\n\nSemua data identitas, kelas, mahasiswa, dan rekap jurnalnya akan terhapus secara permanen dari Database (Tidak dapat dikembalikan).`)) {
+                const response = await apiCall({ action: 'delete_asisten', id: id });
+                if(response.status === 'success') {
+                    usersDB = usersDB.filter(u => u.id !== id);
+                    populateHistoryFilters();
+                    renderAdminVerify(); renderAdminDashboard(); renderAdminRekap();
+                    alert(`Asisten ${name} berhasil dihapus.`);
+                } else { alert("Gagal menghapus: " + response.message); }
+            }
+        }
+
+        function renderAdminRekap() {
+            const tbody = document.getElementById('table-admin-rekap'); tbody.innerHTML = ''; 
+            const fProdi = document.getElementById('filter-rekap-prodi').value;
+            const fSem = document.getElementById('filter-rekap-semester').value;
+            const fThn = document.getElementById('filter-rekap-tahun').value;
+
+            let filtered = usersDB.filter(u => u.status === 'approved');
+            
+            // Terapkan Filter Lapis
+            if(fProdi !== 'all') filtered = filtered.filter(u => u.prodi === fProdi || (!u.prodi && fProdi === 'Arsitektur'));
+            if(fSem !== 'all') filtered = filtered.filter(u => u.semester === fSem);
+            if(fThn !== 'all') filtered = filtered.filter(u => u.tahun === fThn);
+            
+            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan=\"6\" class=\"px-5 py-8 text-center text-slate-500\">Tidak ada data asisten pada filter/arsip ini.</td></tr>`; return; }
+            filtered.forEach((a, i) => { 
+                const delBtn = `<button onclick=\"deleteAsisten('${a.id}', '${a.name}')\" class=\"text-red-400 hover:text-red-700 hover:bg-red-50 p-2 rounded-xl transition-colors shadow-sm\"><i class=\"ph ph-trash text-lg\"></i></button>`;
+                tbody.innerHTML += `<tr class=\"hover:bg-slate-50\"><td class=\"px-5 py-3 text-center font-medium\">${i+1}</td><td class=\"px-5 py-3 font-bold text-slate-700\">${a.name}<br><span class=\"text-xs text-emerald-600 font-semibold\">${a.prodi || 'Arsitektur'}</span></td><td class=\"px-5 py-3 text-sm text-slate-500 font-medium\">${a.semester || '-'}<br>${a.tahun || '-'}</td><td class=\"px-5 py-3 font-bold text-emerald-700\">${a.bankName}</td><td class=\"px-5 py-3 font-medium\">${a.bankAcc}</td><td class=\"px-5 py-3 text-center\">${delBtn}</td></tr>`; 
             });
         }
         async function approveAsisten(id, btnElement) {
