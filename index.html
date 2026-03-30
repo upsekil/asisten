@@ -31,7 +31,6 @@
         .a4-paper {
             width: 794px; /* Lebar A4 pada 96 DPI */
             min-height: 1123px; /* Tinggi A4 */
-            /* Margin diperkecil: Atas 1.5cm, Kanan 1.5cm, Bawah 1.5cm, Kiri 2cm */
             padding: 56px 56px 56px 75px; 
             background: white;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -64,9 +63,7 @@
         <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-xl relative overflow-hidden fade-in my-auto">
             <div class="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div>
             <div class="text-center mb-6 sm:mb-8 mt-2">
-                <!-- LOGO CONTAINER -->
                 <div id="login-logo-container" class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-3 sm:mb-4">
-                    <!-- Default State (Tampil sebentar sebelum gambar dimuat dari Google Script) -->
                     <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-50 flex items-center justify-center">
                         <i class="ph-fill ph-buildings text-4xl sm:text-5xl text-emerald-600"></i>
                     </div>
@@ -118,7 +115,17 @@
                     <h3 class="font-bold text-emerald-800 mb-1 text-sm sm:text-base"><i class="ph-fill ph-user-circle mr-1"></i> 1. Data Pribadi</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                         <div><label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label><input type="text" id="reg-name" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Program Studi</label><select id="reg-prodi" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"><option value="Arsitektur">Arsitektur</option><option value="Teknik Lingkungan">Teknik Lingkungan</option><option value="Biologi">Biologi</option><option value="Kimia">Kimia</option><option value="Teknologi Informasi">Teknologi Informasi</option><option value="Teknik Fisika">Teknik Fisika</option></select></div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Program Studi</label>
+                            <select id="reg-prodi" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="Arsitektur">Arsitektur</option>
+                                <option value="Teknik Lingkungan">Teknik Lingkungan</option>
+                                <option value="Biologi">Biologi</option>
+                                <option value="Kimia">Kimia</option>
+                                <option value="Teknologi Informasi">Teknologi Informasi</option>
+                                <option value="Teknik Fisika">Teknik Fisika</option>
+                            </select>
+                        </div>
                         <div><label class="block text-xs font-semibold text-slate-700 mb-1">Email Aktif</label><input type="email" id="reg-email" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-700 mb-1">No. WhatsApp</label><input type="tel" id="reg-wa" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
                         <div class="md:col-span-2"><label class="block text-xs font-semibold text-slate-700 mb-1">NIK (Sesuai KTP)</label><input type="number" id="reg-nik" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
@@ -177,7 +184,6 @@
         <!-- MAIN CONTENT -->
         <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-slate-50/50 w-full">
             
-            <!-- Tambahan: Indikator Cloud Sync (Penyimpanan ke Database) -->
             <div id="cloud-sync-status" class="fixed bottom-6 right-6 px-4 py-2.5 rounded-full shadow-lg text-sm font-bold text-white z-50 transition-all transform flex items-center gap-2 opacity-0 translate-y-5 pointer-events-none"></div>
 
             <header class="lg:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md sticky top-0 z-[45]">
@@ -252,6 +258,26 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h3 class="font-bold text-slate-700"><i class="ph-fill ph-chalkboard-teacher text-emerald-600 mr-2"></i>Daftar Kelas yang Diasuh Asisten (Aktif)</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left whitespace-nowrap">
+                                <thead class="bg-slate-100 text-slate-600 text-xs uppercase border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-5 py-3">Nama Asisten</th>
+                                        <th class="px-5 py-3">Mata Kuliah & Unit</th>
+                                        <th class="px-5 py-3 text-center">Jml Mahasiswa</th>
+                                        <th class="px-5 py-3">Dosen Pengampu</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-admin-kelas" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- ADMIN: VERIFIKASI ASISTEN -->
@@ -293,16 +319,14 @@
                         <form onsubmit="saveAdminSettings(event)">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mb-6">
                                 
-                                <!-- Group 1: Periode -->
                                 <div class="col-span-1 md:col-span-2 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-100">
                                     <h3 class="font-bold text-slate-700 mb-3 border-b border-slate-200 pb-2"><i class="ph-fill ph-calendar-blank text-emerald-600"></i> Periode Akademik</h3>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div><label class="block text-xs font-semibold text-slate-500 mb-1.5">Semester</label><select id="set-semester" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500"><option value="Ganjil">Ganjil</option><option value="Genap">Genap</option></select></div>
-                                        <div><label class="block text-xs font-semibold text-slate-500 mb-1.5">Tahun Ajaran</label><input type="text" id="set-tahun" required placeholder="Contoh: 2023/2024" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                                        <div><label class="block text-xs font-semibold text-slate-500 mb-1.5">Tahun Ajaran</label><input type="text" id="set-tahun" required placeholder="Contoh: 2024/2025" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
                                     </div>
                                 </div>
                                 
-                                <!-- Group 2: Institusi -->
                                 <div class="col-span-1 md:col-span-2 mt-2"><h3 class="font-bold text-slate-700 mb-3 border-b border-slate-200 pb-2"><i class="ph-fill ph-buildings text-emerald-600"></i> Informasi Institusi</h3></div>
                                 <div><label class="block text-xs font-semibold text-slate-500 mb-1.5">Kementerian Atas</label><input type="text" id="set-kemen" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
                                 <div><label class="block text-xs font-semibold text-slate-500 mb-1.5">Nama Universitas</label><input type="text" id="set-univ" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-emerald-500"></div>
@@ -310,7 +334,6 @@
                                 <div><label class="block text-xs font-semibold text-slate-500 mb-1.5">URL Logo Kampus</label><input type="text" id="set-logo" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
                                 <div class="col-span-1 md:col-span-2"><label class="block text-xs font-semibold text-slate-500 mb-1.5">Alamat Kampus & Kontak (Boleh gunakan baris baru "Enter")</label><textarea id="set-alamat" rows="2" placeholder="Jl. Syeikh Abdur Rauf Kopelma Darussalam Banda Aceh&#10;Telp: 0651-7551 423/Fax: 0651-7553020 Email : laboratorium.fst@ar-raniry.ac.id" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 resize-none"></textarea></div>
                                 
-                                <!-- Group 3: Pimpinan & Laboran -->
                                 <div class="col-span-1 md:col-span-2 mt-2"><h3 class="font-bold text-slate-700 mb-3 border-b border-slate-200 pb-2"><i class="ph-fill ph-users-three text-emerald-600"></i> Data Pimpinan & Laboran (Berdasarkan Prodi)</h3></div>
                                 <div class="col-span-1 md:col-span-2 bg-blue-50 border border-blue-200 p-4 rounded-xl mb-2">
                                     <label class="block text-xs font-bold text-blue-800 mb-1.5">Ketua Laboratorium (Penandatangan Surat Keterangan)</label>
@@ -336,20 +359,36 @@
                 <div id="page-asisten-dashboard" class="page hidden fade-in">
                     <div class="mb-6 md:mb-8"><h2 class="text-xl sm:text-2xl font-bold text-slate-800">Dashboard Asisten</h2><p class="text-slate-500 text-sm">Ringkasan kelas yang sedang Anda asisten-i semester ini.</p></div>
                     
-                    <!-- Pilihan Program Studi Asisten -->
-                    <div class="bg-emerald-50 border border-emerald-200 p-4 sm:p-5 rounded-2xl mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                    <!-- FITUR BARU: Update Periode oleh Asisten -->
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 sm:p-5 rounded-2xl mb-8 flex flex-col gap-4 shadow-sm">
                         <div>
-                            <h3 class="font-bold text-emerald-800 flex items-center gap-2"><i class="ph-fill ph-student text-xl"></i> Program Studi Anda</h3>
-                            <p class="text-xs text-emerald-600 mt-1">Pilih prodi agar sistem memuat nama Laboran yang tepat pada Laporan.</p>
+                            <h3 class="font-bold text-emerald-800 flex items-center gap-2"><i class="ph-fill ph-identification-card text-xl"></i> Identitas & Periode Aktif</h3>
+                            <p class="text-xs text-emerald-600 mt-1">Sesuaikan Semester & Tahun jika Anda mendaftar ulang untuk periode baru. Data ini digunakan pada Laporan PDF dan Rekap Admin.</p>
                         </div>
-                        <select id="asisten-prodi-select" onchange="updateProdi(this.value)" class="w-full sm:w-auto px-4 py-2.5 border border-emerald-300 rounded-lg text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500 min-w-[250px] shadow-sm">
-                            <option value="Arsitektur">Arsitektur</option>
-                            <option value="Teknik Lingkungan">Teknik Lingkungan</option>
-                            <option value="Biologi">Biologi</option>
-                            <option value="Kimia">Kimia</option>
-                            <option value="Teknologi Informasi">Teknologi Informasi</option>
-                            <option value="Teknik Fisika">Teknik Fisika</option>
-                        </select>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-emerald-700 mb-1">Program Studi</label>
+                                <select id="asisten-prodi-select" onchange="updateAsistenData('prodi', this.value)" class="w-full px-4 py-2.5 border border-emerald-300 rounded-lg text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                                    <option value="Arsitektur">Arsitektur</option>
+                                    <option value="Teknik Lingkungan">Teknik Lingkungan</option>
+                                    <option value="Biologi">Biologi</option>
+                                    <option value="Kimia">Kimia</option>
+                                    <option value="Teknologi Informasi">Teknologi Informasi</option>
+                                    <option value="Teknik Fisika">Teknik Fisika</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-emerald-700 mb-1">Semester</label>
+                                <select id="asisten-semester-select" onchange="updateAsistenData('semester', this.value)" class="w-full px-4 py-2.5 border border-emerald-300 rounded-lg text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                                    <option value="Ganjil">Ganjil</option>
+                                    <option value="Genap">Genap</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-emerald-700 mb-1">Tahun Ajaran</label>
+                                <input type="text" id="asisten-tahun-input" onchange="updateAsistenData('tahun', this.value)" placeholder="Cth: 2024/2025" class="w-full px-4 py-2.5 border border-emerald-300 rounded-lg text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
@@ -510,7 +549,6 @@
             if(document.getElementById('mobile-logo-container')) document.getElementById('mobile-logo-container').innerHTML = imgHtml;
         }
 
-        // ================= FETCH PENGATURAN GLOBAL SAAT HALAMAN DIMUAT (UNTUK LOGO) =================
         window.addEventListener('DOMContentLoaded', () => {
             apiCall({ action: 'get_admin_data' }).then(response => {
                 if(response.status === 'success' && response.settings) {
@@ -558,11 +596,6 @@
 
             if (response.status === 'success') {
                 currentUser = response.user; 
-                
-                // Prioritas Data:
-                // 1. Ambil dari Database (Cloud)
-                // 2. Jika database kosong, ambil dari LocalStorage HP (Migrasi data lama)
-                // 3. Jika semuanya kosong, buat data baru (Asisten baru)
                 let cloudData = currentUser.appData;
                 let localData = localStorage.getItem('asisten_data_' + currentUser.id);
                 
@@ -570,18 +603,25 @@
                     currentUser.data = cloudData;
                 } else if (localData) {
                     currentUser.data = JSON.parse(localData);
-                    syncLocalData(); // Force backup data lama ke cloud saat berhasil login pertama kali
+                    syncLocalData();
                 } else {
-                    currentUser.data = { classes: [], prodi: currentUser.prodi || "Arsitektur" };
+                    currentUser.data = { classes: [], prodi: currentUser.prodi || "Arsitektur", semester: currentUser.semester || "Ganjil", tahun: currentUser.tahun || "" };
                 }
 
-                if(!currentUser.data.prodi) currentUser.data.prodi = currentUser.prodi || "Arsitektur";
+                // Default Period Settings from DB if empty
+                if (!currentUser.data.prodi) currentUser.data.prodi = currentUser.prodi || "Arsitektur";
+                if (!currentUser.data.semester && currentUser.semester) currentUser.data.semester = currentUser.semester;
+                if (!currentUser.data.tahun && currentUser.tahun) currentUser.data.tahun = currentUser.tahun;
+
                 if(currentUser.data.classes.length > 0) activeClassId = currentUser.data.classes[0].id; else activeClassId = null;
                 
                 apiCall({action:'get_admin_data'}).then(res => { 
                     if(res.settings && Object.keys(res.settings).length > 0) {
                         adminSettings = { ...adminSettings, ...res.settings }; 
                         if(adminSettings.logoUrl) updateAllLogos(adminSettings.logoUrl);
+                        // Make sure if assistant has NO semester setting, apply global default
+                        if (!currentUser.data.semester) currentUser.data.semester = adminSettings.semester;
+                        if (!currentUser.data.tahun) currentUser.data.tahun = adminSettings.tahun;
                     }
                 });
                 startSession();
@@ -601,7 +641,7 @@
                         if(adminSettings.logoUrl) updateAllLogos(adminSettings.logoUrl);
                     }
                     currentUser = { role: 'admin', name: 'Administrator' };
-                    populateHistoryFilters(); // Mengisi opsi dropdown Filter Arsip
+                    populateHistoryFilters(); 
                     startSession();
                 } else { alert("Gagal mengambil data dari server."); }
             } else { alert("Kredensial Admin Salah!"); }
@@ -614,19 +654,16 @@
         }
         function logout() { currentUser = null; activeClassId = null; document.getElementById('page-auth').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); }
         
-        // Fitur Auto-Save Background (Tanpa loading layar, berjalan senyap)
+        // Auto-Save Background
         let syncTimeout = null;
         function syncLocalData() { 
             if(currentUser && currentUser.role === 'asisten') {
-                // 1. Simpan di perangkat sementara (Agar UI terasa instan tanpa delay)
                 localStorage.setItem('asisten_data_' + currentUser.id, JSON.stringify(currentUser.data)); 
                 
-                // 2. Tampilkan notifikasi sedang menyimpan
                 const syncUI = document.getElementById('cloud-sync-status');
                 syncUI.className = "fixed bottom-6 right-6 px-4 py-2.5 rounded-full shadow-lg text-xs font-bold text-white z-50 transition-all transform flex items-center gap-2 bg-amber-500 opacity-100 translate-y-0";
                 syncUI.innerHTML = `<div class="loader w-3 h-3 border-[2px] border-t-white"></div> Menyimpan ke Database...`;
 
-                // 3. Tunda API call 2 detik untuk menghindari Spam Google Sheet saat asisten klik checkbox secara cepat
                 clearTimeout(syncTimeout);
                 syncTimeout = setTimeout(async () => {
                     try {
@@ -720,17 +757,54 @@
         function renderAdminDashboard() {
             let active = usersDB.filter(u => u.status === 'approved'); let pending = usersDB.filter(u => u.status === 'pending_admin');
             document.getElementById('dash-admin-total').innerText = usersDB.length; document.getElementById('dash-admin-aktif').innerText = active.length; document.getElementById('dash-admin-pending').innerText = pending.length; document.getElementById('dash-admin-bank').innerText = new Set(active.map(u => u.bankName)).size;
+            
+            // Render Pendaftar Terbaru
             const recentTb = document.getElementById('table-admin-recent'); recentTb.innerHTML = ''; const recentUsers = [...usersDB].reverse().slice(0, 5);
             if(recentUsers.length === 0) { recentTb.innerHTML = `<tr><td colspan=\"3\" class=\"px-5 py-6 text-center text-slate-500\">Belum ada pendaftar.</td></tr>`; } 
             else { recentUsers.forEach(u => { let badge = u.status === 'approved' ? `<span class=\"bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded\">Disetujui</span>` : `<span class=\"bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-1 rounded\">Pending</span>`; let timeId = u.id.replace('A', ''); let dateStr = new Date(parseInt(timeId)).toLocaleDateString('id-ID', {day:'2-digit', month:'short'}); if (dateStr === 'Invalid Date') dateStr = u.id; recentTb.innerHTML += `<tr class=\"hover:bg-slate-50\"><td class=\"px-5 py-3\"><p class=\"font-bold text-slate-700 text-sm\">${u.name}</p></td><td class=\"px-5 py-3 text-center\">${badge}</td><td class=\"px-5 py-3 text-right text-xs text-slate-500\">${dateStr}</td></tr>`; }); }
+
+            // Render Daftar Kelas Asisten
+            const kelasTb = document.getElementById('table-admin-kelas');
+            kelasTb.innerHTML = '';
+            let adaKelas = false;
+
+            active.forEach(u => {
+                if(u.appData && u.appData.classes && u.appData.classes.length > 0) {
+                    adaKelas = true;
+                    u.appData.classes.forEach(c => {
+                        kelasTb.innerHTML += `
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-5 py-3 border-r border-slate-50">
+                                    <p class="font-bold text-slate-700">${u.name}</p>
+                                    <p class="text-xs text-emerald-600 font-semibold">${u.prodi || 'Arsitektur'}</p>
+                                </td>
+                                <td class="px-5 py-3 border-r border-slate-50">
+                                    <p class="font-bold text-slate-800">${c.mk}</p>
+                                    <p class="text-xs text-slate-500 font-medium mt-0.5">Unit: <span class="text-slate-700 font-bold">${c.unit}</span> &bull; ${c.meetings || 16}x Pert.</p>
+                                </td>
+                                <td class="px-5 py-3 text-center border-r border-slate-50 font-bold text-lg text-slate-700">
+                                    ${c.students ? c.students.length : 0} <span class="text-xs font-normal text-slate-400">Mhs</span>
+                                </td>
+                                <td class="px-5 py-3 text-sm font-medium text-slate-600">
+                                    ${c.dosen}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+
+            if(!adaKelas) {
+                kelasTb.innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center text-slate-500"><div class="text-4xl mb-2 text-slate-300"><i class="ph-fill ph-folder-open"></i></div>Belum ada kelas yang didaftarkan oleh asisten saat ini.</td></tr>`;
+            }
         }
+
         function renderAdminVerify() {
             const tbody = document.getElementById('table-admin-verify'); tbody.innerHTML = '';
             usersDB.forEach((a, i) => {
                 const isPending = a.status === 'pending_admin'; 
                 const badge = isPending ? `<span class=\"bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-xs font-bold border border-amber-200\">Pending</span>` : `<span class=\"bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-200\">Approved</span>`;
                 
-                // Modifikasi Aksi untuk memasukkan tombol Delete
                 const actionBtn = isPending ? `<button onclick=\"approveAsisten('${a.id}', this)\" class=\"bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 active:scale-95 shadow mb-1 w-full\">Setujui</button>` : `<span class=\"text-slate-500 text-xs font-semibold flex items-center justify-center gap-1 mb-1\"><i class=\"ph-fill ph-check-circle text-emerald-500 text-lg\"></i> Selesai</span>`;
                 const delBtn = `<button onclick=\"deleteAsisten('${a.id}', '${a.name}')\" class=\"bg-red-50 text-red-600 px-5 py-2 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white shadow-sm transition-colors w-full flex items-center justify-center gap-1\"><i class=\"ph ph-trash\"></i> Hapus</button>`;
                 
@@ -786,16 +860,21 @@
         }
 
         function exportRekapExcel() {
-            const filterVal = document.getElementById('filter-rekap-prodi').value;
-            let activeAssistants = usersDB.filter(u => u.status === 'approved');
-            if(filterVal !== 'all') activeAssistants = activeAssistants.filter(u => u.prodi === filterVal || (!u.prodi && filterVal === 'Arsitektur'));
+            const fProdi = document.getElementById('filter-rekap-prodi').value;
+            const fSem = document.getElementById('filter-rekap-semester').value;
+            const fThn = document.getElementById('filter-rekap-tahun').value;
+            let filtered = usersDB.filter(u => u.status === 'approved');
             
-            if(activeAssistants.length === 0) { alert("Tidak ada data untuk diekspor!"); return; }
-            let excelData = [["No", "Nama Lengkap", "Program Studi", "Email", "No. WhatsApp", "Nama Bank", "No. Rekening", "NIK KTP", "NPWP"]];
-            activeAssistants.forEach((a, i) => { excelData.push([ i+1, a.name, a.prodi || 'Arsitektur', a.email, a.wa, a.bankName, a.bankAcc, a.nik, a.npwp || '-' ]); });
-            const ws = XLSX.utils.aoa_to_sheet(excelData); ws['!cols'] = [{wch:5}, {wch:25}, {wch:20}, {wch:25}, {wch:15}, {wch:12}, {wch:20}, {wch:20}, {wch:20}];
+            if(fProdi !== 'all') filtered = filtered.filter(u => u.prodi === fProdi || (!u.prodi && fProdi === 'Arsitektur'));
+            if(fSem !== 'all') filtered = filtered.filter(u => u.semester === fSem);
+            if(fThn !== 'all') filtered = filtered.filter(u => u.tahun === fThn);
+            
+            if(filtered.length === 0) { alert("Tidak ada data untuk diekspor!"); return; }
+            let excelData = [["No", "Nama Lengkap", "Program Studi", "Semester", "Tahun Ajaran", "Email", "No. WhatsApp", "Nama Bank", "No. Rekening", "NIK KTP", "NPWP"]];
+            filtered.forEach((a, i) => { excelData.push([ i+1, a.name, a.prodi || 'Arsitektur', a.semester || '-', a.tahun || '-', a.email, a.wa, a.bankName, a.bankAcc, a.nik, a.npwp || '-' ]); });
+            const ws = XLSX.utils.aoa_to_sheet(excelData); ws['!cols'] = [{wch:5}, {wch:25}, {wch:20}, {wch:12}, {wch:15}, {wch:25}, {wch:15}, {wch:12}, {wch:20}, {wch:20}, {wch:20}];
             const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Rekap_Asisten"); 
-            let fileName = `Rekap_Asisten_${filterVal === 'all' ? 'SemuaProdi' : filterVal}_${adminSettings.semester}_${adminSettings.tahun.replace('/','-')}.xlsx`;
+            let fileName = `Rekap_Asisten_${fProdi === 'all' ? 'SemuaProdi' : fProdi}_${fSem}_${fThn.replace('/','-')}.xlsx`;
             XLSX.writeFile(wb, fileName);
         }
         function populateAdminSettingsForm() {
@@ -839,12 +918,20 @@
         }
 
         // ================= ASISTEN LOGIC: DASHBOARD & KELAS =================
-        window.updateProdi = function(val) {
-            if(currentUser && currentUser.data) { currentUser.data.prodi = val; syncLocalData(); }
+        window.updateAsistenData = function(field, val) {
+            if(currentUser && currentUser.data) { 
+                currentUser.data[field] = val; 
+                syncLocalData(); 
+            }
         }
 
         function renderAsistenDashboard() {
-            if(currentUser.data && currentUser.data.prodi) { document.getElementById('asisten-prodi-select').value = currentUser.data.prodi; }
+            if(currentUser.data) { 
+                if(currentUser.data.prodi) document.getElementById('asisten-prodi-select').value = currentUser.data.prodi; 
+                document.getElementById('asisten-semester-select').value = currentUser.data.semester || adminSettings.semester || "Ganjil";
+                document.getElementById('asisten-tahun-input').value = currentUser.data.tahun || adminSettings.tahun || "";
+            }
+            
             const cls = currentUser.data.classes; document.getElementById('dash-asisten-total-kelas').innerText = cls.length;
             let totalMhs = 0; cls.forEach(c => totalMhs += c.students.length); document.getElementById('dash-asisten-total-mhs').innerText = totalMhs;
             const list = document.getElementById('dashboard-class-list'); list.innerHTML = '';
@@ -935,22 +1022,18 @@
         async function generateKopSuratHtml(prefix) {
             let logoSrc = await getBase64Logo();
             
-            // Format otomatis untuk mengubah format email menjadi biru dan bergaris bawah
             let rawAlamat = adminSettings.alamat || "Jl. Syeikh Abdur Rauf Kopelma Darussalam Banda Aceh\nTelp: 0651-7551 423/Fax: 0651-7553020 Email : laboratorium.fst@ar-raniry.ac.id";
             let alamatHtml = rawAlamat.replace(/\n/g, '<br>');
             alamatHtml = alamatHtml.replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi, '<a href="mailto:$1" style="color: blue; text-decoration: underline;">$1</a>');
             
-            // Perbaikan Grid Kop: Menggunakan flex responsif yang menengahkan teks pada sisa area
             let html = `
                 <div class="flex items-center pb-2">
-                    <!-- Logo Kiri -->
                     <div class="w-[110px] shrink-0 flex justify-center">
                         <img id="${prefix}-logo" src="${logoSrc || 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/UIN_Ar-Raniry_Banda_Aceh.png/300px-UIN_Ar-Raniry_Banda_Aceh.png'}" 
                              alt="Logo" class="w-[90px] h-auto object-contain ${logoSrc ? '' : ''}" 
                              onerror="this.src='https://via.placeholder.com/90?text=LOGO'">
                     </div>
                     
-                    <!-- Text Center (Menempati sisa ruang) -->
                     <div class="flex-1 text-center text-black">
                         <div class="text-[16pt] font-bold leading-tight uppercase" style="font-family: 'Times New Roman', Times, serif;">${adminSettings.kemen || "KEMENTERIAN AGAMA"}</div>
                         <div class="text-[13.5pt] font-bold leading-tight uppercase mt-1" style="font-family: Arial, sans-serif;">${adminSettings.univ || "UNIVERSITAS ISLAM NEGERI AR-RANIRY BANDA ACEH"}</div>
@@ -959,7 +1042,6 @@
                     </div>
                 </div>
                 
-                <!-- Garis Ganda Kop -->
                 <div class="border-b-[4px] border-black w-full mt-1"></div>
                 <div class="border-b-[1px] border-black w-full mt-[2px] mb-5"></div>
             `;
@@ -974,8 +1056,9 @@
             
             await generateKopSuratHtml('print');
             
-            // Ambil data Program Studi asisten
             let userProdi = (currentUser && currentUser.data && currentUser.data.prodi) ? currentUser.data.prodi : "Arsitektur";
+            let activeSemester = (currentUser && currentUser.data && currentUser.data.semester) ? currentUser.data.semester : (adminSettings.semester || '-');
+            let activeTahun = (currentUser && currentUser.data && currentUser.data.tahun) ? currentUser.data.tahun : (adminSettings.tahun || '-');
             
             let htmlContent = '';
             
@@ -991,8 +1074,8 @@
                         <tr><td class="pr-2 pb-1">PROGRAM STUDI</td><td class="pr-2 pb-1">:</td><td class="pb-1 uppercase font-bold">${userProdi}</td></tr>
                     </table>
                     <table class="border-none text-left leading-[1.5]">
-                        <tr><td class="pr-2 pb-1 w-32">SEMESTER</td><td class="pr-2 pb-1">:</td><td class="pb-1 uppercase font-bold">${adminSettings.semester || '-'}</td></tr>
-                        <tr><td class="pr-2 pb-1">TAHUN AJARAN</td><td class="pr-2 pb-1">:</td><td class="pb-1 font-bold">${adminSettings.tahun || '-'}</td></tr>
+                        <tr><td class="pr-2 pb-1 w-32">SEMESTER</td><td class="pr-2 pb-1">:</td><td class="pb-1 uppercase font-bold">${activeSemester}</td></tr>
+                        <tr><td class="pr-2 pb-1">TAHUN AJARAN</td><td class="pr-2 pb-1">:</td><td class="pb-1 font-bold">${activeTahun}</td></tr>
                     </table>
                 </div>
             `;
@@ -1096,8 +1179,9 @@
             const year = new Date().getFullYear(); 
             const randomNum = Math.floor(Math.random() * 899 + 100); 
             
-            // Ambil data Program Studi asisten
             let userProdi = (currentUser && currentUser.data && currentUser.data.prodi) ? currentUser.data.prodi : "Arsitektur";
+            let activeSemester = (currentUser && currentUser.data && currentUser.data.semester) ? currentUser.data.semester : (adminSettings.semester || '-');
+            let activeTahun = (currentUser && currentUser.data && currentUser.data.tahun) ? currentUser.data.tahun : (adminSettings.tahun || '-');
             
             let htmlContent = `
                 <div class="text-center mb-10 mt-2 font-formal">
@@ -1116,12 +1200,12 @@
                     <p class="mb-4">Dengan ini menerangkan dengan sesungguhnya bahwa:</p>
                     <table class="border-none text-left w-full mb-6 ml-6">
                         <tr><td class="w-44 pb-2">Nama Lengkap</td><td class="w-4 pb-2">:</td><td class="pb-2 font-bold">${currentUser.name}</td></tr>
-                        <tr><td class="pb-2">NIK</td><td class="pb-2">:</td><td class="pb-2">${currentUser.nik}</td></tr>
+                        <tr><td class="pb-2">Nomor Induk / NIM</td><td class="pb-2">:</td><td class="pb-2">${currentUser.nik}</td></tr>
                     </table>
                     
-                    <p class="mb-4" style="text-indent: 40px;">Adalah benar telah melaksanakan tugas sebagai <b>Asisten Laboratorium</b> pada Program Studi <b>${userProdi}</b> untuk mata kuliah <b>${ac.mk || '.......'}</b> (Unit: ${ac.unit || '.......'}, Dosen Pengampu: ${ac.dosen || '.......'}) pada Semester ${adminSettings.semester} Tahun Ajaran ${adminSettings.tahun}.</p>
-                    <p class="mb-4" style="text-indent: 40px;">Selama bertugas, yang bersangkutan telah menunjukkan kinerja yang baik, disiplin, dan bertanggung jawab atas rincian kegiatan praktikum/laboratorium yang diampunya.</p>
-                    <p class="mb-4" style="text-indent: 40px;">Demikian surat keterangan ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.</p>
+                    <p class="mb-4" style="text-indent: 40px;">Adalah benar telah melaksanakan tugas sebagai <b>Asisten Laboratorium</b> pada Program Studi <b>${userProdi}</b> untuk mata kuliah <b>${ac.mk || '.......'}</b> (Unit: ${ac.unit || '.......'}, Dosen Pengampu: ${ac.dosen || '.......'}) pada Semester ${activeSemester} Tahun Ajaran ${activeTahun}.</p>
+                    <p class="mb-10" style="text-indent: 40px;">Selama bertugas, yang bersangkutan telah menunjukkan kinerja yang baik, disiplin, dan bertanggung jawab atas rincian kegiatan praktikum/laboratorium yang diampunya.</p>
+                    <p class="mb-12" style="text-indent: 40px;">Demikian surat keterangan ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.</p>
                 </div>
                 
                 <div class="flex justify-end text-[11.5pt] mt-8 font-formal">
