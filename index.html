@@ -410,13 +410,16 @@
                     <h2 class="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Manajemen Kelas & Unit</h2>
                     <p class="text-slate-500 text-sm mb-4 sm:mb-6">Tambahkan kelas/unit yang Anda tangani. Data ini otomatis tersimpan di perangkat Anda.</p>
                     <div class="bg-emerald-50/50 p-5 sm:p-6 rounded-3xl shadow-inner border border-emerald-100 mb-8">
-                        <h3 class="font-bold text-emerald-800 mb-4 flex items-center gap-2"><i class="ph-fill ph-plus-circle text-xl"></i> Buat Kelas Baru</h3>
-                        <form onsubmit="addClass(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <h3 class="font-bold text-emerald-800 mb-4 flex items-center gap-2"><i class="ph-fill ph-plus-circle text-xl"></i> Form Kelas Studio/Lab</h3>
+                        <form id="form-class" onsubmit="handleClassForm(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4">
                             <div class="md:col-span-5"><label class="block text-xs font-bold text-slate-700 mb-1.5">Mata Kuliah Studio/Lab</label><input type="text" id="add-class-mk" required placeholder="Contoh: Studio Perancangan 1" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
                             <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-700 mb-1.5">Unit Kelas</label><input type="text" id="add-class-unit" required placeholder="Contoh: 01 / A" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
                             <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-700 mb-1.5">Jml Pertemuan</label><select id="add-class-meetings" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"><option value="16">16 Kali</option><option value="8">8 Kali</option></select></div>
                             <div class="md:col-span-3"><label class="block text-xs font-bold text-slate-700 mb-1.5">Dosen Pengampu</label><input type="text" id="add-class-dosen" required placeholder="Nama Lengkap & Gelar" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></div>
-                            <div class="md:col-span-12 flex justify-end mt-2"><button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md active:scale-95">Simpan Kelas</button></div>
+                            <div class="md:col-span-12 flex justify-end mt-2 gap-3">
+                                <button type="button" id="btn-cancel-edit" onclick="cancelEditClass()" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all shadow-md active:scale-95">Batal Edit</button>
+                                <button type="submit" id="btn-save-class" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md active:scale-95">Simpan Kelas</button>
+                            </div>
                         </form>
                     </div>
                     <h3 class="font-bold text-lg text-slate-700 mb-3">Kelas Terdaftar</h3>
@@ -938,21 +941,113 @@
             if(cls.length === 0) { list.innerHTML = `<div class=\"col-span-full text-center py-10 bg-white rounded-2xl border border-slate-200\"><p class=\"text-slate-500\">Belum ada kelas yang didaftarkan.</p></div>`; } 
             else { cls.forEach(c => { let meetings = c.meetings || 16; let completedJurnal = Object.values(c.jurnal).filter(j => j && j.status === 'tuntas').length; list.innerHTML += `<div class=\"bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col\"><div class=\"flex justify-between items-start mb-3\"><div><span class=\"bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded\">Unit ${c.unit}</span></div><button onclick=\"activeClassId='${c.id}'; nav('absensi')\" class=\"text-xs bg-slate-100 hover:bg-slate-200 font-semibold px-3 py-1.5 rounded-lg text-slate-700 transition-colors\">Buka Kelas</button></div><h4 class=\"font-bold text-lg leading-tight mb-1 text-slate-800\">${c.mk}</h4><p class=\"text-sm text-slate-500 mb-4\"><i class=\"ph-fill ph-chalkboard-teacher mr-1\"></i> ${c.dosen}</p><div class=\"mt-auto grid grid-cols-2 gap-2 border-t border-slate-100 pt-3\"><div class=\"text-center\"><p class=\"text-[10px] text-slate-400 font-bold uppercase tracking-wide\">MHS</p><p class=\"font-bold text-slate-700\">${c.students.length}</p></div><div class=\"text-center\"><p class=\"text-[10px] text-slate-400 font-bold uppercase tracking-wide\">JURNAL SELESAI</p><p class=\"font-bold text-emerald-600\">${completedJurnal}/${meetings}</p></div></div></div>`; }); }
         }
-        function addClass(e) {
-            e.preventDefault(); const mk = document.getElementById('add-class-mk').value; const unit = document.getElementById('add-class-unit').value; const dosen = document.getElementById('add-class-dosen').value; const meetings = parseInt(document.getElementById('add-class-meetings').value);
-            let initialJurnal = {}; for(let i=1; i<=meetings; i++) initialJurnal[i] = {kegiatan: '', status: ''};
-            const newClass = { id: 'C'+Date.now(), mk, unit, dosen, meetings, students: [], absensi: {}, jurnal: initialJurnal };
-            currentUser.data.classes.push(newClass); activeClassId = newClass.id; syncLocalData();
-            document.getElementById('add-class-mk').value = ''; document.getElementById('add-class-unit').value = ''; document.getElementById('add-class-dosen').value = ''; renderAsistenKelas(); renderAsistenDashboard(); alert(`Kelas ${mk} Unit ${unit} (${meetings} Pertemuan) ditambahkan!`);
+
+        // Fitur Form Kelas (Tambah & Update)
+        let editingClassId = null;
+
+        function handleClassForm(e) {
+            e.preventDefault(); 
+            const mk = document.getElementById('add-class-mk').value; 
+            const unit = document.getElementById('add-class-unit').value; 
+            const dosen = document.getElementById('add-class-dosen').value; 
+            const meetings = parseInt(document.getElementById('add-class-meetings').value);
+            
+            if (editingClassId) {
+                // Update Kelas Lama
+                const cIndex = currentUser.data.classes.findIndex(c => c.id === editingClassId);
+                if (cIndex > -1) {
+                    currentUser.data.classes[cIndex].mk = mk;
+                    currentUser.data.classes[cIndex].unit = unit;
+                    currentUser.data.classes[cIndex].dosen = dosen;
+                    
+                    const oldMeetings = currentUser.data.classes[cIndex].meetings || 16;
+                    currentUser.data.classes[cIndex].meetings = meetings;
+                    
+                    // Tambah slot jurnal jika pertemuan bertambah (dari 8 ke 16)
+                    if(meetings > oldMeetings) {
+                         for(let i = oldMeetings + 1; i <= meetings; i++) {
+                             if(!currentUser.data.classes[cIndex].jurnal[i]) {
+                                 currentUser.data.classes[cIndex].jurnal[i] = {kegiatan: '', status: ''};
+                             }
+                         }
+                    }
+                }
+                alert(`Kelas ${mk} Unit ${unit} berhasil diperbarui!`);
+                cancelEditClass();
+            } else {
+                // Tambah Kelas Baru
+                let initialJurnal = {}; for(let i=1; i<=meetings; i++) initialJurnal[i] = {kegiatan: '', status: ''};
+                const newClass = { id: 'C'+Date.now(), mk, unit, dosen, meetings, students: [], absensi: {}, jurnal: initialJurnal };
+                currentUser.data.classes.push(newClass); 
+                activeClassId = newClass.id; 
+                alert(`Kelas ${mk} Unit ${unit} (${meetings} Pertemuan) ditambahkan!`);
+                
+                document.getElementById('add-class-mk').value = ''; 
+                document.getElementById('add-class-unit').value = ''; 
+                document.getElementById('add-class-dosen').value = ''; 
+            }
+
+            syncLocalData();
+            renderAsistenKelas(); 
+            renderAsistenDashboard(); 
         }
+
+        function editClass(id) {
+            const cls = currentUser.data.classes.find(c => c.id === id);
+            if(!cls) return;
+            editingClassId = id;
+            document.getElementById('add-class-mk').value = cls.mk;
+            document.getElementById('add-class-unit').value = cls.unit;
+            document.getElementById('add-class-dosen').value = cls.dosen;
+            document.getElementById('add-class-meetings').value = cls.meetings || 16;
+            
+            document.getElementById('btn-save-class').innerText = "Update Kelas";
+            document.getElementById('btn-save-class').classList.replace('bg-emerald-600', 'bg-blue-600');
+            document.getElementById('btn-save-class').classList.replace('hover:bg-emerald-700', 'hover:bg-blue-700');
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+            
+            // Scroll ke atas
+            document.getElementById('page-asisten-kelas').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEditClass() {
+            editingClassId = null;
+            document.getElementById('add-class-mk').value = '';
+            document.getElementById('add-class-unit').value = '';
+            document.getElementById('add-class-dosen').value = '';
+            document.getElementById('add-class-meetings').value = '16';
+            
+            document.getElementById('btn-save-class').innerText = "Simpan Kelas";
+            document.getElementById('btn-save-class').classList.replace('bg-blue-600', 'bg-emerald-600');
+            document.getElementById('btn-save-class').classList.replace('hover:bg-blue-700', 'hover:bg-emerald-700');
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+        }
+
         function renderAsistenKelas() {
             const tb = document.getElementById('table-classes'); tb.innerHTML = ''; const cls = currentUser.data.classes;
             if(cls.length === 0) { tb.innerHTML = `<tr><td colspan=\"4\" class=\"px-6 py-8 text-center text-slate-500\">Data kelas kosong.</td></tr>`; return; }
-            cls.forEach((c, i) => { tb.innerHTML += `<tr class=\"hover:bg-slate-50 transition-colors\"><td class=\"px-4 sm:px-6 py-4 font-bold text-slate-700\">${c.mk}</td><td class=\"px-4 sm:px-6 py-4 text-center\"><span class=\"bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded text-xs\">Unit ${c.unit}</span><p class="text-[10px] text-slate-500 mt-0.5">${c.meetings || 16}x Pert.</p></td><td class=\"px-4 sm:px-6 py-4 font-medium text-sm\">${c.dosen}</td><td class=\"px-4 sm:px-6 py-4 text-center\"><button onclick=\"deleteClass('${c.id}')\" class=\"text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-2 rounded-xl transition-colors shadow-sm\"><i class=\"ph ph-trash text-lg\"></i></button></td></tr>`; });
+            cls.forEach((c, i) => { 
+                const editBtn = `<button onclick=\"editClass('${c.id}')\" title="Edit Kelas" class=\"text-blue-500 hover:text-white bg-blue-50 hover:bg-blue-500 p-2 rounded-xl transition-colors shadow-sm mr-1.5\"><i class=\"ph ph-pencil-simple text-lg\"></i></button>`;
+                const delBtn = `<button onclick=\"deleteClass('${c.id}')\" title="Hapus Kelas" class=\"text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-2 rounded-xl transition-colors shadow-sm\"><i class=\"ph ph-trash text-lg\"></i></button>`;
+                tb.innerHTML += `<tr class=\"hover:bg-slate-50 transition-colors\"><td class=\"px-4 sm:px-6 py-4 font-bold text-slate-700\">${c.mk}</td><td class=\"px-4 sm:px-6 py-4 text-center\"><span class=\"bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded text-xs\">Unit ${c.unit}</span><p class="text-[10px] text-slate-500 mt-0.5">${c.meetings || 16}x Pert.</p></td><td class=\"px-4 sm:px-6 py-4 font-medium text-sm\">${c.dosen}</td><td class=\"px-4 sm:px-6 py-4 text-center whitespace-nowrap\">${editBtn}${delBtn}</td></tr>`; 
+            });
         }
         function deleteClass(id) { if(confirm("Yakin ingin menghapus kelas ini beserta seluruh isinya?")) { currentUser.data.classes = currentUser.data.classes.filter(c => c.id !== id); if(activeClassId === id) activeClassId = currentUser.data.classes.length > 0 ? currentUser.data.classes[0].id : null; syncLocalData(); renderAsistenKelas(); renderAsistenDashboard(); } }
 
         // ================= ASISTEN LOGIC: MAHASISWA & ABSEN & JURNAL =================
+        function downloadTemplateExcel() {
+            // Membuat template dasar dengan SheetJS (Library XLSX yang sudah kita pasang di HTML)
+            const ws = XLSX.utils.aoa_to_sheet([
+                ["NIM", "Nama Lengkap"],
+                ["12345678", "Contoh Nama Mahasiswa 1"],
+                ["87654321", "Contoh Nama Mahasiswa 2"]
+            ]);
+            ws['!cols'] = [{wch:15}, {wch:35}]; // Mengatur lebar kolom agar rapi
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data_Mahasiswa");
+            XLSX.writeFile(wb, "Template_Data_Mahasiswa.xlsx");
+        }
+
         function importExcel(e) {
             const file = e.target.files[0]; if(!file) return; const ac = getActiveClass(); if(!ac) return; const reader = new FileReader();
             reader.onload = function(evt) {
