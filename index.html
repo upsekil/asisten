@@ -553,6 +553,27 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            // FITUR BARU: Auto-Login jika ada sesi yang tersimpan
+            const savedSession = localStorage.getItem('active_session');
+            if (savedSession) {
+                try {
+                    currentUser = JSON.parse(savedSession);
+                    // Jika asisten, pulihkan juga data kelasnya
+                    if (currentUser.role === 'asisten') {
+                        let localData = localStorage.getItem('asisten_data_' + currentUser.id);
+                        if (localData) currentUser.data = JSON.parse(localData);
+                        else currentUser.data = { classes: [], prodi: currentUser.prodi || "Arsitektur", semester: "Ganjil", tahun: "" };
+                        
+                        if (currentUser.data && currentUser.data.classes && currentUser.data.classes.length > 0) {
+                            activeClassId = currentUser.data.classes[0].id;
+                        }
+                    }
+                    startSession(); // Langsung masuk tanpa login
+                } catch(e) {
+                    localStorage.removeItem('active_session');
+                }
+            }
+
             apiCall({ action: 'get_admin_data' }).then(response => {
                 if(response.status === 'success' && response.settings) {
                     adminSettings = { ...adminSettings, ...response.settings };
@@ -651,11 +672,23 @@
         }
 
         function startSession() {
+            // Simpan Sesi ke LocalStorage agar tidak logout saat refresh
+            localStorage.setItem('active_session', JSON.stringify({
+                id: currentUser.id, name: currentUser.name, email: currentUser.email, 
+                role: currentUser.role, prodi: currentUser.prodi || (currentUser.data ? currentUser.data.prodi : ""), 
+                nik: currentUser.nik, wa: currentUser.wa
+            }));
+
             document.getElementById('page-auth').classList.add('hidden'); document.getElementById('app').classList.remove('hidden');
             document.getElementById('user-name-display').innerText = currentUser.name; document.getElementById('user-initial').innerText = currentUser.name.substring(0,2).toUpperCase(); document.getElementById('user-role-display').innerText = currentUser.role === 'admin' ? 'Administrator' : 'Asisten Laboratorium';
             renderSidebar(); if(currentUser.role === 'admin') { nav('admin-dashboard'); populateAdminSettingsForm(); } else { nav('asisten-dashboard'); }
         }
-        function logout() { currentUser = null; activeClassId = null; document.getElementById('page-auth').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); }
+        
+        function logout() { 
+            localStorage.removeItem('active_session'); // Hapus sesi saat logout ditekan
+            currentUser = null; activeClassId = null; 
+            document.getElementById('page-auth').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); 
+        }
         
         // Auto-Save Background
         let syncTimeout = null;
