@@ -1171,7 +1171,7 @@
                 </div>
                 
                 <div class="border-b-[4px] border-black w-full mt-1"></div>
-                <div class="border-b-[1px] border-black w-full mt-[2px] mb-5"></div>
+                <div class="border-b-[1px] border-black w-full mt-[2px] mb-3"></div>
             `;
             document.getElementById(`${prefix}-kop-container`).innerHTML = html;
         }
@@ -1191,17 +1191,17 @@
             let htmlContent = '';
             
             htmlContent += `
-                <div class="text-center font-bold text-[14pt] mb-4 uppercase font-formal">
+                <div class="text-center font-bold text-[14pt] mb-3 uppercase font-formal">
                     ${type === 'absensi' ? 'DAFTAR HADIR MAHASISWA' : 'RINCIAN KEGIATAN PRAKTIKUM'}
                 </div>
                 
-                <div class="flex justify-between text-left text-[11pt] mb-5 font-formal">
-                    <table class="border-none text-left leading-[1.5]">
+                <div class="flex justify-between text-left text-[11pt] mb-3 font-formal">
+                    <table class="border-none text-left leading-[1.3]">
                         <tr><td class="pr-2 pb-1 w-36">MATA KULIAH</td><td class="pr-2 pb-1">:</td><td class="pb-1 font-bold uppercase">${ac.mk || '-'}</td></tr>
                         <tr><td class="pr-2 pb-1">UNIT</td><td class="pr-2 pb-1">:</td><td class="pb-1 uppercase font-bold">${ac.unit || '-'}</td></tr>
                         <tr><td class="pr-2 pb-1">PROGRAM STUDI</td><td class="pr-2 pb-1">:</td><td class="pb-1 uppercase font-bold">${userProdi}</td></tr>
                     </table>
-                    <table class="border-none text-left leading-[1.5]">
+                    <table class="border-none text-left leading-[1.3]">
                         <tr><td class="pr-2 pb-1 w-32">SEMESTER</td><td class="pr-2 pb-1">:</td><td class="pb-1 uppercase font-bold">${activeSemester}</td></tr>
                         <tr><td class="pr-2 pb-1">TAHUN AJARAN</td><td class="pr-2 pb-1">:</td><td class="pb-1 font-bold">${activeTahun}</td></tr>
                     </table>
@@ -1211,18 +1211,18 @@
             const meetings = ac.meetings || 16;
 
             if(type === 'absensi') {
-                htmlContent += `<table class="w-full border-collapse border border-black text-center mt-3 font-formal"><thead class="bg-gray-100"><tr><th class="border border-black p-2 w-10 text-[10pt]">No</th><th class="border border-black p-2 w-28 text-[10pt]">NIM</th><th class="border border-black p-2 text-left px-3 text-[10pt]">NAMA</th>`;
-                for(let i=1; i<=meetings; i++) htmlContent += `<th class="border border-black p-2 w-6 text-[10pt]">${i}</th>`; 
+                htmlContent += `<table class="w-full border-collapse border border-black text-center mt-2 font-formal"><thead class="bg-gray-100"><tr><th class="border border-black py-1.5 px-1 w-8 text-[9pt]">No</th><th class="border border-black py-1.5 px-1 w-24 text-[9pt]">NIM</th><th class="border border-black py-1.5 px-2 text-left text-[9pt]">NAMA MAHASISWA</th>`;
+                for(let i=1; i<=meetings; i++) htmlContent += `<th class="border border-black py-1.5 px-1 w-6 text-[9pt]">${i}</th>`; 
                 htmlContent += `</tr></thead><tbody>`;
                 ac.students.forEach((m, idx) => { 
-                    htmlContent += `<tr><td class="border border-black p-1.5 text-[10pt]">${idx+1}</td><td class="border border-black p-1.5 text-[10pt] tracking-wide">${m.nim}</td><td class="border border-black p-1.5 text-left px-3 text-[10pt] truncate max-w-[150px]">${m.nama}</td>`; 
-                    for(let i=1; i<=meetings; i++) htmlContent += `<td class="border border-black p-1.5 font-bold text-[10pt]">${ac.absensi[`${m.nim}_${i}`] || ''}</td>`; 
+                    htmlContent += `<tr><td class="border border-black py-1 px-1 text-[9pt]">${idx+1}</td><td class="border border-black py-1 px-1 text-[9pt] tracking-wide">${m.nim}</td><td class="border border-black py-1 px-2 text-left text-[9pt] truncate max-w-[150px]">${m.nama}</td>`; 
+                    for(let i=1; i<=meetings; i++) htmlContent += `<td class="border border-black py-1 px-1 font-bold text-[9pt]">${ac.absensi[`${m.nim}_${i}`] || ''}</td>`; 
                     htmlContent += `</tr>`; 
                 }); 
                 htmlContent += `</tbody></table>`;
             } else {
-                htmlContent += `<table class="w-full border-collapse border border-black mt-3 font-formal"><thead class="bg-gray-100"><tr><th class="border border-black p-2.5 w-16 text-center text-[11pt]" rowspan="2">PERT</th><th class="border border-black p-2.5 text-center text-[11pt]" rowspan="2">JUDUL PRAKTIKUM / KEGIATAN</th><th class="border border-black p-2.5 text-center text-[11pt]" colspan="2">KETERANGAN</th></tr><tr><th class="border border-black p-2 w-24 text-center text-[11pt]">TUNTAS</th><th class="border border-black p-2 w-24 text-center text-[11pt]">TIDAK</th></tr></thead><tbody>`;
-                for(let i=1; i<=meetings; i++) { let j = ac.jurnal[i] || {kegiatan: '', status: ''}; htmlContent += `<tr><td class="border border-black p-2.5 text-center text-[11pt]">${i}</td><td class="border border-black p-2.5 px-4 text-[11pt]">${j.kegiatan || '-'}</td><td class="border border-black p-2.5 text-center font-bold text-[11pt]">${j.status==='tuntas'?'V':''}</td><td class="border border-black p-2.5 text-center font-bold text-[11pt]">${j.status==='tidak'?'V':''}</td></tr>`; } 
+                htmlContent += `<table class="w-full border-collapse border border-black mt-2 font-formal"><thead class="bg-gray-100"><tr><th class="border border-black py-1.5 px-2 w-12 text-center text-[10pt]" rowspan="2">PERT</th><th class="border border-black py-1.5 px-2 text-center text-[10pt]" rowspan="2">JUDUL PRAKTIKUM / KEGIATAN</th><th class="border border-black py-1 px-2 text-center text-[10pt]" colspan="2">KETERANGAN</th></tr><tr><th class="border border-black py-1 px-1 w-20 text-center text-[10pt]">TUNTAS</th><th class="border border-black py-1 px-1 w-20 text-center text-[10pt]">TIDAK</th></tr></thead><tbody>`;
+                for(let i=1; i<=meetings; i++) { let j = ac.jurnal[i] || {kegiatan: '', status: ''}; htmlContent += `<tr><td class="border border-black py-1.5 px-2 text-center text-[10pt]">${i}</td><td class="border border-black py-1.5 px-3 text-[10pt]">${j.kegiatan || '-'}</td><td class="border border-black py-1.5 px-1 text-center font-bold text-[10pt]">${j.status==='tuntas'?'V':''}</td><td class="border border-black py-1.5 px-1 text-center font-bold text-[10pt]">${j.status==='tidak'?'V':''}</td></tr>`; } 
                 htmlContent += `</tbody></table>`;
             }
 
@@ -1230,8 +1230,8 @@
             let laboranName = adminSettings[laboranKey] || "Nama Laboran";
             
             htmlContent += `
-                <div class="mt-8 font-formal">
-                    <table class="border-none text-left text-[11pt] w-full mb-12 leading-[1.5]">
+                <div class="mt-4 font-formal">
+                    <table class="border-none text-left text-[10pt] w-full mb-4 leading-[1.3]">
                         <tr>
                             <td class="w-32 pb-1">DOSEN</td>
                             <td class="w-4 pb-1">:</td>
@@ -1250,11 +1250,11 @@
                     </table>
                 </div>
                 
-                <div class="flex justify-end text-[11pt] mt-12 font-formal">
-                    <div class="text-left w-64 leading-[1.5]">
+                <div class="flex justify-end text-[10pt] mt-4 font-formal">
+                    <div class="text-left w-64 leading-[1.3]">
                         <p>Banda Aceh, ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</p>
-                        <p class="mb-2">Asisten Laboratorium,</p>
-                        <div id="qr-code-print" class="my-2 h-[85px] w-[85px]"></div>
+                        <p class="mb-1">Asisten Laboratorium,</p>
+                        <div id="qr-code-print" class="my-1.5 h-[70px] w-[70px]"></div>
                         <p class="font-bold underline">${currentUser.name}</p>
                     </div>
                 </div>
@@ -1266,7 +1266,7 @@
                 const qrBox = document.getElementById('qr-code-print');
                 if(qrBox) {
                     qrBox.innerHTML = ''; 
-                    new QRCode(qrBox, { text: `Dokumen Resmi\nAsisten Lab: ${currentUser.name}\nMata Kuliah: ${ac.mk}\nUnit: ${ac.unit}\nTanggal: ${new Date().toLocaleDateString('id-ID')}`, width: 85, height: 85, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.M });
+                    new QRCode(qrBox, { text: `Dokumen Resmi\nAsisten Lab: ${currentUser.name}\nMata Kuliah: ${ac.mk}\nUnit: ${ac.unit}\nTanggal: ${new Date().toLocaleDateString('id-ID')}`, width: 70, height: 70, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.M });
                 }
             }, 100);
         }
@@ -1274,10 +1274,16 @@
         async function saveToDrive() {
             const ac = getActiveClass(); if(!ac) return; const btn = document.getElementById('btn-save'); const ori = btn.innerHTML; btn.innerHTML = `<div class=\"loader inline-block\"></div> Mengirim...`; btn.disabled = true;
             try { 
-                const canvas = await html2canvas(document.getElementById('print-area'), {scale: 2, useCORS: true}); 
+                const canvas = await html2canvas(document.getElementById('print-area'), {scale: 2, useCORS: true, scrollY: 0}); 
                 const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4'); 
-                const pdfWidth = 210; const pdfHeight = (canvas.height * pdfWidth) / canvas.width; 
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight); 
+                const pdfWidth = 210; const pageHeight = 297; 
+                let imgHeight = (canvas.height * pdfWidth) / canvas.width; let finalWidth = pdfWidth;
+                
+                // Jika tinggi gambar hasil render lebih tinggi dari batas A4, scale down agar muat di 1 halaman!
+                if (imgHeight > pageHeight) { finalWidth = (canvas.width * pageHeight) / canvas.height; imgHeight = pageHeight; }
+                const xOffset = (pdfWidth - finalWidth) / 2;
+                
+                pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', xOffset, 0, finalWidth, imgHeight); 
                 const base64Pdf = pdf.output('datauristring').split(',')[1]; 
                 const fileName = `Laporan_${currentLaporanType.toUpperCase()}_Unit${ac.unit}_${currentUser.name}_${new Date().getTime()}.pdf`; 
                 const response = await apiCall({ action: 'save_pdf', base64: base64Pdf, filename: fileName, asistenName: currentUser.name, type: currentLaporanType }); 
@@ -1288,10 +1294,15 @@
         async function unduhLaporanPDF() {
             const ac = getActiveClass(); if(!ac) return; const btn = document.getElementById('btn-unduh-laporan'); const ori = btn.innerHTML; btn.innerHTML = `<div class=\"loader inline-block border-t-white\"></div> Mengunduh...`; btn.disabled = true;
             try { 
-                const canvas = await html2canvas(document.getElementById('print-area'), {scale: 2, useCORS: true}); 
+                const canvas = await html2canvas(document.getElementById('print-area'), {scale: 2, useCORS: true, scrollY: 0}); 
                 const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4'); 
-                const pdfWidth = 210; const pdfHeight = (canvas.height * pdfWidth) / canvas.width; 
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight); 
+                const pdfWidth = 210; const pageHeight = 297; 
+                let imgHeight = (canvas.height * pdfWidth) / canvas.width; let finalWidth = pdfWidth;
+                
+                if (imgHeight > pageHeight) { finalWidth = (canvas.width * pageHeight) / canvas.height; imgHeight = pageHeight; }
+                const xOffset = (pdfWidth - finalWidth) / 2;
+                
+                pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', xOffset, 0, finalWidth, imgHeight); 
                 pdf.save(`Laporan_${currentLaporanType.toUpperCase()}_Unit${ac.unit}_${currentUser.name}.pdf`); 
             } catch(e) { alert("Gagal mengunduh Laporan"); } btn.innerHTML = ori; btn.disabled = false;
         }
@@ -1360,10 +1371,15 @@
         async function cetakSurat() {
             const ac = getActiveClass(); if(!ac) return; const btn = document.getElementById('btn-cetak-surat'); const ori = btn.innerHTML; btn.innerHTML = `<div class=\"loader inline-block border-t-white\"></div> Memproses PDF...`; btn.disabled = true;
             try { 
-                const canvas = await html2canvas(document.getElementById('surat-area'), {scale: 2, useCORS: true}); 
+                const canvas = await html2canvas(document.getElementById('surat-area'), {scale: 2, useCORS: true, scrollY: 0}); 
                 const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4'); 
-                const pdfWidth = 210; const pdfHeight = (canvas.height * pdfWidth) / canvas.width; 
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight); 
+                const pdfWidth = 210; const pageHeight = 297; 
+                let imgHeight = (canvas.height * pdfWidth) / canvas.width; let finalWidth = pdfWidth;
+                
+                if (imgHeight > pageHeight) { finalWidth = (canvas.width * pageHeight) / canvas.height; imgHeight = pageHeight; }
+                const xOffset = (pdfWidth - finalWidth) / 2;
+                
+                pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', xOffset, 0, finalWidth, imgHeight); 
                 pdf.save(`Surat_Keterangan_Unit${ac.unit}_${currentUser.name}.pdf`); 
             } catch(e) { alert("Gagal convert Surat Keterangan"); } btn.innerHTML = ori; btn.disabled = false;
         }
