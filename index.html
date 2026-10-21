@@ -216,11 +216,32 @@
                     <select id="active-class-select" onchange="changeActiveClass(this.value)" class="w-full sm:w-auto min-w-[250px] px-4 py-2.5 border border-emerald-300 rounded-lg text-sm font-semibold bg-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"></select>
                 </div>
 
+                <!-- PESAN / KOMUNIKASI ADMIN-ASISTEN -->
+                <div id="page-komunikasi" class="page hidden fade-in">
+                    <div class="mb-6"><h2 class="text-xl sm:text-2xl font-bold text-slate-800">Pesan & Komunikasi</h2><p class="text-slate-500 text-sm">Kirim pesan melalui email antara Laboran dan Asisten Laboratorium.</p></div>
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                            <form id="form-komunikasi" onsubmit="sendCommunication(event)" class="space-y-4">
+                                <div id="message-target-wrap"><label class="block text-sm font-semibold text-slate-700 mb-1.5">Penerima</label>
+                                    <select id="message-target" onchange="toggleMessageRecipient()" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500"><option value="all">Semua asisten yang disetujui</option><option value="single">Asisten tertentu</option></select>
+                                </div>
+                                <div id="message-recipient-wrap" class="hidden"><label class="block text-sm font-semibold text-slate-700 mb-1.5">Pilih Asisten</label><select id="message-recipient" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500"><option value="">Memuat daftar asisten...</option></select></div>
+                                <div><label class="block text-sm font-semibold text-slate-700 mb-1.5">Subjek</label><input id="message-subject" required maxlength="180" placeholder="Subjek pesan" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                                <div><label class="block text-sm font-semibold text-slate-700 mb-1.5">Isi Pesan</label><textarea id="message-body" required maxlength="10000" rows="7" placeholder="Tuliskan pesan Anda..." class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"></textarea><p class="text-xs text-slate-400 mt-1">Pesan dikirim ke email terdaftar. Hindari menyertakan informasi sensitif yang tidak diperlukan.</p></div>
+                                <button id="btn-send-message" type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2"><i class="ph ph-paper-plane-tilt"></i> Kirim Pesan</button>
+                            </form>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 h-fit"><i class="ph-fill ph-envelope-simple text-3xl text-emerald-700"></i><h3 class="font-bold text-emerald-900 mt-2">Informasi Pengiriman</h3><p id="message-help" class="text-sm text-emerald-800 mt-2 leading-relaxed">Pesan dikirim melalui layanan email Google Apps Script.</p><p class="text-xs text-emerald-700 mt-4">Pastikan izin pengiriman email pada akun pemilik Apps Script sudah diberikan.</p></div>
+                    </div>
+                    <div id="message-result" class="hidden mt-5 rounded-xl p-4 text-sm"></div>
+                </div>
+
                 <!-- ==================== ADMIN PAGES ==================== -->
                 
                 <!-- ADMIN: DASHBOARD -->
                 <div id="page-admin-dashboard" class="page hidden fade-in">
                     <div class="mb-6 md:mb-8"><h2 class="text-xl sm:text-2xl font-bold text-slate-800">Dashboard Laboran</h2><p class="text-slate-500 text-sm">Ringkasan aktivitas dan pendaftaran asisten studio terkini.</p></div>
+                    <div id="admin-inbox" class="mb-8"></div>
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
@@ -358,6 +379,7 @@
                 <!-- ASISTEN: DASHBOARD -->
                 <div id="page-asisten-dashboard" class="page hidden fade-in">
                     <div class="mb-6 md:mb-8"><h2 class="text-xl sm:text-2xl font-bold text-slate-800">Dashboard Asisten</h2><p class="text-slate-500 text-sm">Ringkasan kelas yang sedang Anda asisten-i semester ini.</p></div>
+                    <div id="assistant-inbox" class="mb-8"></div>
                     
                     <!-- FITUR BARU: Update Periode oleh Asisten -->
                     <div class="bg-emerald-50 border border-emerald-200 p-4 sm:p-5 rounded-2xl mb-8 flex flex-col gap-4 shadow-sm">
@@ -727,9 +749,9 @@
             menus.forEach(menu => {
                 if(!menu) return;
                 if(currentUser.role === 'admin') {
-                    menu.innerHTML = `<button onclick="nav('admin-dashboard')" class="${commonClass}" id="nav-admin-dashboard"><i class="ph-fill ph-squares-four text-xl"></i> Dashboard Admin</button><button onclick="nav('admin-verify')" class="${commonClass}" id="nav-admin-verify"><i class="ph-fill ph-user-circle-plus text-xl"></i> Verifikasi Asisten</button><button onclick="nav('admin-rekap')" class="${commonClass}" id="nav-admin-rekap"><i class="ph-fill ph-file-xls text-xl"></i> Rekap Data Asisten</button><button onclick="nav('admin-settings')" class="${commonClass}" id="nav-admin-settings"><i class="ph-fill ph-gear text-xl"></i> Setting Global</button>`;
+                    menu.innerHTML = `<button onclick="nav('admin-dashboard')" class="${commonClass}" id="nav-admin-dashboard"><i class="ph-fill ph-squares-four text-xl"></i> Dashboard Admin</button><button onclick="nav('admin-verify')" class="${commonClass}" id="nav-admin-verify"><i class="ph-fill ph-user-circle-plus text-xl"></i> Verifikasi Asisten</button><button onclick="nav('admin-rekap')" class="${commonClass}" id="nav-admin-rekap"><i class="ph-fill ph-file-xls text-xl"></i> Rekap Data Asisten</button><button onclick="nav('admin-settings')" class="${commonClass}" id="nav-admin-settings"><i class="ph-fill ph-gear text-xl"></i> Setting Global</button><button onclick="nav('komunikasi')" class="${commonClass}" id="nav-komunikasi"><i class="ph-fill ph-envelope-simple text-xl"></i> Pesan Asisten</button>`;
                 } else {
-                    menu.innerHTML = `<button onclick="nav('asisten-dashboard')" class="${commonClass}" id="nav-asisten-dashboard"><i class="ph-fill ph-squares-four text-xl"></i> Dashboard Asisten</button><button onclick="nav('asisten-kelas')" class="${commonClass}" id="nav-asisten-kelas"><i class="ph-fill ph-folders text-xl"></i> Manajemen Kelas</button><button onclick="nav('mahasiswa')" class="${commonClass}" id="nav-mahasiswa"><i class="ph-fill ph-student text-xl"></i> Data Mahasiswa</button><button onclick="nav('absensi')" class="${commonClass}" id="nav-absensi"><i class="ph-fill ph-list-checks text-xl"></i> Absensi Kelas</button><button onclick="nav('jurnal')" class="${commonClass}" id="nav-jurnal"><i class="ph-fill ph-book-bookmark text-xl"></i> Jurnal Kegiatan</button><button onclick="nav('laporan')" class="${commonClass}" id="nav-laporan"><i class="ph-fill ph-printer text-xl"></i> Cetak Laporan</button><button onclick="nav('surat')" class="${commonClass} text-amber-300 hover:text-amber-100" id="nav-surat"><i class="ph-fill ph-certificate text-xl"></i> Surat Keterangan</button>`;
+                    menu.innerHTML = `<button onclick="nav('asisten-dashboard')" class="${commonClass}" id="nav-asisten-dashboard"><i class="ph-fill ph-squares-four text-xl"></i> Dashboard Asisten</button><button onclick="nav('asisten-kelas')" class="${commonClass}" id="nav-asisten-kelas"><i class="ph-fill ph-folders text-xl"></i> Manajemen Kelas</button><button onclick="nav('mahasiswa')" class="${commonClass}" id="nav-mahasiswa"><i class="ph-fill ph-student text-xl"></i> Data Mahasiswa</button><button onclick="nav('absensi')" class="${commonClass}" id="nav-absensi"><i class="ph-fill ph-list-checks text-xl"></i> Absensi Kelas</button><button onclick="nav('jurnal')" class="${commonClass}" id="nav-jurnal"><i class="ph-fill ph-book-bookmark text-xl"></i> Jurnal Kegiatan</button><button onclick="nav('laporan')" class="${commonClass}" id="nav-laporan"><i class="ph-fill ph-printer text-xl"></i> Cetak Laporan</button><button onclick="nav('surat')" class="${commonClass} text-amber-300 hover:text-amber-100" id="nav-surat"><i class="ph-fill ph-certificate text-xl"></i> Surat Keterangan</button><button onclick="nav('komunikasi')" class="${commonClass}" id="nav-komunikasi"><i class="ph-fill ph-envelope-simple text-xl"></i> Hubungi Laboran</button>`;
                 }
             });
             document.querySelectorAll('#nav-menu-mobile button').forEach(b => { b.addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden')); });
@@ -755,10 +777,11 @@
                 } else { if(document.getElementById(`empty-state-${pageId}`)) document.getElementById(`empty-state-${pageId}`).classList.add('hidden'); }
             } else { document.getElementById('global-class-selector').classList.add('hidden'); }
 
-            if(pageId === 'admin-dashboard') renderAdminDashboard();
+            if(pageId === 'admin-dashboard') { renderAdminDashboard(); loadInbox(); }
+            if(pageId === 'komunikasi') loadCommunicationPage();
             if(pageId === 'admin-verify') renderAdminVerify();
             if(pageId === 'admin-rekap') renderAdminRekap();
-            if(pageId === 'asisten-dashboard') renderAsistenDashboard();
+            if(pageId === 'asisten-dashboard') { renderAsistenDashboard(); loadInbox(); }
             if(pageId === 'asisten-kelas') renderAsistenKelas();
             if(pageId === 'mahasiswa' && currentUser.data.classes.length > 0) renderMhs();
             if(pageId === 'absensi' && currentUser.data.classes.length > 0) { renderAbsensiHeader(); renderAbs(); }
@@ -1383,6 +1406,92 @@
                 pdf.save(`Surat_Keterangan_Unit${ac.unit}_${currentUser.name}.pdf`); 
             } catch(e) { alert("Gagal convert Surat Keterangan"); } btn.innerHTML = ori; btn.disabled = false;
         }
+
+        // ================= KOMUNIKASI EMAIL ADMIN-ASISTEN =================
+        function toggleMessageRecipient() {
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            document.getElementById('message-recipient-wrap').classList.toggle('hidden', !(isAdmin && document.getElementById('message-target').value === 'single'));
+        }
+        async function loadCommunicationPage() {
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const wrap = document.getElementById('message-target-wrap');
+            if (!isAdmin) {
+                wrap.classList.add('hidden');
+                document.getElementById('message-recipient-wrap').classList.add('hidden');
+                document.getElementById('message-help').textContent = 'Pesan Anda akan dikirim ke alamat email resmi Laboratorium FST. Cantumkan nama dan keperluan secara jelas.';
+                return;
+            }
+            wrap.classList.remove('hidden');
+            document.getElementById('message-help').textContent = 'Pilih semua asisten yang telah disetujui atau kirim pesan secara personal kepada satu asisten.';
+            const select = document.getElementById('message-recipient');
+            select.innerHTML = '<option value="">Memuat daftar asisten...</option>';
+            const response = await apiCall({action:'get_admin_data'});
+            if (response.status === 'success') {
+                usersDB = response.asisten || [];
+                const approved = usersDB.filter(u => u.status === 'approved');
+                select.innerHTML = approved.length ? approved.map(u => `<option value="${escapeMessageHtml(String(u.id))}">${escapeMessageHtml(u.name)} — ${escapeMessageHtml(u.email)}</option>`).join('') : '<option value="">Belum ada asisten disetujui</option>';
+            } else select.innerHTML = '<option value="">Gagal memuat daftar</option>';
+            toggleMessageRecipient();
+        }
+        function escapeMessageHtml(value) {
+            return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+        async function sendCommunication(event) {
+            event.preventDefault();
+            if (!currentUser) return;
+            const btn = document.getElementById('btn-send-message');
+            const resultBox = document.getElementById('message-result');
+            const subject = document.getElementById('message-subject').value.trim();
+            const body = document.getElementById('message-body').value.trim();
+            if (!subject || !body) return;
+            const payload = {action:'send_message', senderRole:currentUser.role, senderId:currentUser.id || '', senderEmail:currentUser.email || (currentUser.role === 'admin' ? 'laboratorium.fst@ar-raniry.ac.id' : ''), senderName:currentUser.name || '', subject, body};
+            if (currentUser.role === 'admin') {
+                payload.target = document.getElementById('message-target').value;
+                payload.recipientId = document.getElementById('message-recipient').value;
+                if (payload.target === 'single' && !payload.recipientId) { alert('Pilih asisten penerima terlebih dahulu.'); return; }
+            }
+            const original = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = '<span class="loader inline-block"></span> Mengirim...';
+            resultBox.className = 'mt-5 rounded-xl p-4 text-sm';
+            resultBox.textContent = 'Pesan sedang diproses...'; resultBox.classList.remove('hidden');
+            const response = await apiCall(payload);
+            if (response.status === 'success') {
+                resultBox.classList.add('bg-emerald-50','border','border-emerald-200','text-emerald-800');
+                resultBox.textContent = response.message || 'Pesan berhasil dikirim.';
+                document.getElementById('message-subject').value = '';
+                document.getElementById('message-body').value = '';
+            } else {
+                resultBox.classList.add('bg-red-50','border','border-red-200','text-red-800');
+                resultBox.textContent = response.message || 'Pesan gagal dikirim.';
+            }
+            btn.disabled = false; btn.innerHTML = original;
+            if (response.status === 'success') loadInbox();
+        }
+
+        // ================= KOTAK PESAN DALAM DASHBOARD =================
+        async function loadInbox() {
+            if (!currentUser) return;
+            const container = currentUser.role === 'admin' ? document.getElementById('admin-inbox') : document.getElementById('assistant-inbox');
+            if (!container) return;
+            container.innerHTML = '<div class="bg-white border border-slate-200 rounded-2xl p-5 text-sm text-slate-500"><span class="loader inline-block mr-2"></span>Memuat pesan...</div>';
+            const response = await apiCall({action:'list_messages', role:currentUser.role, userId:currentUser.id || '', email:currentUser.email || ''});
+            if (response.status !== 'success') {
+                container.innerHTML = `<div class="bg-white border border-amber-200 rounded-2xl p-5 text-sm text-amber-800">Kotak pesan belum dapat dimuat: ${escapeMessageHtml(response.message || 'Terjadi kesalahan.')}</div>`;
+                return;
+            }
+            const messages = response.messages || [];
+            const unread = messages.filter(m => !m.isRead).length;
+            container.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2"><div><h3 class="font-bold text-slate-800"><i class="ph-fill ph-envelope-open text-emerald-600 mr-2"></i>Kotak Pesan</h3><p class="text-xs text-slate-500 mt-1">Pesan tampil di sini dan juga dikirim sebagai notifikasi email.</p></div><div class="flex items-center gap-2"><span class="text-xs font-semibold px-3 py-1 rounded-full ${unread ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">${unread} belum dibaca</span><button onclick="loadInbox()" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900"><i class="ph ph-arrow-clockwise mr-1"></i>Segarkan</button></div></div>
+                <div class="divide-y divide-slate-100">${messages.length ? messages.map(m => `<article class="p-5 ${m.isRead ? 'bg-white' : 'bg-emerald-50/50'}"><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3"><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><h4 class="font-bold text-slate-800">${escapeMessageHtml(m.subject)}</h4>${m.isRead ? '' : '<span class="text-[10px] uppercase tracking-wide font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">Baru</span>'}</div><p class="text-xs text-slate-500 mt-1">${currentUser.role === 'admin' ? 'Dari: ' : 'Pengirim: '}${escapeMessageHtml(m.senderName)} · ${escapeMessageHtml(m.sentAt || '')}</p><p class="text-sm text-slate-700 mt-3 whitespace-pre-wrap break-words">${escapeMessageHtml(m.body)}</p></div>${m.isRead ? '' : `<button onclick="markMessageRead('${escapeMessageHtml(m.id)}')" class="shrink-0 text-xs font-bold text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-2 rounded-lg">Tandai dibaca</button>`}</div></article>`).join('') : '<div class="p-8 text-center text-sm text-slate-500"><i class="ph ph-tray text-3xl block mb-2 text-slate-300"></i>Belum ada pesan masuk.</div>'}</div></div>`;
+        }
+        async function markMessageRead(messageId) {
+            if (!currentUser || !messageId) return;
+            const response = await apiCall({action:'mark_message_read', role:currentUser.role, userId:currentUser.id || '', email:currentUser.email || '', messageId});
+            if (response.status === 'success') loadInbox();
+            else alert(response.message || 'Pesan belum dapat ditandai sudah dibaca.');
+        }
+
     </script>
 </body>
 </html>
