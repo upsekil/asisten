@@ -234,6 +234,13 @@
                         <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 h-fit"><i class="ph-fill ph-envelope-simple text-3xl text-emerald-700"></i><h3 class="font-bold text-emerald-900 mt-2">Informasi Pengiriman</h3><p id="message-help" class="text-sm text-emerald-800 mt-2 leading-relaxed">Pesan dikirim melalui layanan email Google Apps Script.</p><p class="text-xs text-emerald-700 mt-4">Pastikan izin pengiriman email pada akun pemilik Apps Script sudah diberikan.</p></div>
                     </div>
                     <div id="message-result" class="hidden mt-5 rounded-xl p-4 text-sm"></div>
+                    <div class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div><h3 class="font-bold text-slate-800"><i class="ph-fill ph-clock-counter-clockwise text-emerald-600 mr-2"></i>Riwayat Komunikasi</h3><p class="text-xs text-slate-500 mt-1">Semua pesan masuk dan pesan yang pernah Anda kirim tetap tersimpan di sini.</p></div>
+                            <div class="flex gap-2"><button type="button" id="history-tab-inbox" onclick="setMessageFolder('inbox')" class="px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white">Pesan Masuk</button><button type="button" id="history-tab-sent" onclick="setMessageFolder('sent')" class="px-4 py-2 rounded-lg text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">Pesan Terkirim</button><button type="button" onclick="loadInbox()" class="px-3 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50" title="Segarkan"><i class="ph ph-arrow-clockwise"></i></button></div>
+                        </div>
+                        <div id="communication-history" class="divide-y divide-slate-100"><div class="p-8 text-center text-sm text-slate-500"><span class="loader inline-block mr-2"></span>Memuat riwayat...</div></div>
+                    </div>
                 </div>
 
                 <!-- ==================== ADMIN PAGES ==================== -->
@@ -1468,22 +1475,47 @@
             if (response.status === 'success') loadInbox();
         }
 
-        // ================= KOTAK PESAN DALAM DASHBOARD =================
+        // ================= KOTAK PESAN + RIWAYAT MASUK/KELUAR =================
+        let activeMessageFolder = 'inbox';
+        let cachedMessages = [];
+        function setMessageFolder(folder) {
+            activeMessageFolder = folder === 'sent' ? 'sent' : 'inbox';
+            const inboxTab = document.getElementById('history-tab-inbox');
+            const sentTab = document.getElementById('history-tab-sent');
+            if (inboxTab && sentTab) {
+                inboxTab.className = activeMessageFolder === 'inbox' ? 'px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white' : 'px-4 py-2 rounded-lg text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200';
+                sentTab.className = activeMessageFolder === 'sent' ? 'px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white' : 'px-4 py-2 rounded-lg text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200';
+            }
+            renderMessageHistory();
+        }
         async function loadInbox() {
             if (!currentUser) return;
-            const container = currentUser.role === 'admin' ? document.getElementById('admin-inbox') : document.getElementById('assistant-inbox');
-            if (!container) return;
-            container.innerHTML = '<div class="bg-white border border-slate-200 rounded-2xl p-5 text-sm text-slate-500"><span class="loader inline-block mr-2"></span>Memuat pesan...</div>';
+            const targets = ['admin-inbox','asisten-inbox','communication-history'];
+            targets.forEach(id => { const el=document.getElementById(id); if(el && id==='communication-history') el.innerHTML='<div class="p-8 text-center text-sm text-slate-500"><span class="loader inline-block mr-2"></span>Memuat riwayat...</div>'; });
             const response = await apiCall({action:'list_messages', role:currentUser.role, userId:currentUser.id || '', email:currentUser.email || ''});
             if (response.status !== 'success') {
-                container.innerHTML = `<div class="bg-white border border-amber-200 rounded-2xl p-5 text-sm text-amber-800">Kotak pesan belum dapat dimuat: ${escapeMessageHtml(response.message || 'Terjadi kesalahan.')}</div>`;
+                const msg = escapeMessageHtml(response.message || 'Terjadi kesalahan.');
+                ['admin-inbox','asisten-inbox','communication-history'].forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML=`<div class="bg-white border border-amber-200 rounded-2xl p-5 text-sm text-amber-800">Riwayat pesan belum dapat dimuat: ${msg}</div>`; });
                 return;
             }
-            const messages = response.messages || [];
-            const unread = messages.filter(m => !m.isRead).length;
-            container.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="px-5 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2"><div><h3 class="font-bold text-slate-800"><i class="ph-fill ph-envelope-open text-emerald-600 mr-2"></i>Kotak Pesan</h3><p class="text-xs text-slate-500 mt-1">Pesan tampil di sini dan juga dikirim sebagai notifikasi email.</p></div><div class="flex items-center gap-2"><span class="text-xs font-semibold px-3 py-1 rounded-full ${unread ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">${unread} belum dibaca</span><button onclick="loadInbox()" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900"><i class="ph ph-arrow-clockwise mr-1"></i>Segarkan</button></div></div>
-                <div class="divide-y divide-slate-100">${messages.length ? messages.map(m => `<article class="p-5 ${m.isRead ? 'bg-white' : 'bg-emerald-50/50'}"><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3"><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><h4 class="font-bold text-slate-800">${escapeMessageHtml(m.subject)}</h4>${m.isRead ? '' : '<span class="text-[10px] uppercase tracking-wide font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">Baru</span>'}</div><p class="text-xs text-slate-500 mt-1">${currentUser.role === 'admin' ? 'Dari: ' : 'Pengirim: '}${escapeMessageHtml(m.senderName)} · ${escapeMessageHtml(m.sentAt || '')}</p><p class="text-sm text-slate-700 mt-3 whitespace-pre-wrap break-words">${escapeMessageHtml(m.body)}</p></div>${m.isRead ? '' : `<button onclick="markMessageRead('${escapeMessageHtml(m.id)}')" class="shrink-0 text-xs font-bold text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-2 rounded-lg">Tandai dibaca</button>`}</div></article>`).join('') : '<div class="p-8 text-center text-sm text-slate-500"><i class="ph ph-tray text-3xl block mb-2 text-slate-300"></i>Belum ada pesan masuk.</div>'}</div></div>`;
+            cachedMessages = response.messages || [];
+            const unread = cachedMessages.filter(m => m.folder === 'inbox' && !m.isRead).length;
+            ['admin-inbox','asisten-inbox'].forEach(id => {
+                const el=document.getElementById(id); if(!el) return;
+                el.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"><div class="px-5 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2"><div><h3 class="font-bold text-slate-800"><i class="ph-fill ph-envelope-open text-emerald-600 mr-2"></i>Kotak Pesan</h3><p class="text-xs text-slate-500 mt-1">Pesan masuk dan riwayat komunikasi tersimpan di dashboard.</p></div><div class="flex items-center gap-2"><span class="text-xs font-semibold px-3 py-1 rounded-full ${unread ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">${unread} belum dibaca</span><button onclick="nav('komunikasi')" class="text-sm font-semibold text-emerald-700 hover:text-emerald-900">Lihat Riwayat <i class="ph ph-arrow-right ml-1"></i></button><button onclick="loadInbox()" class="text-sm font-semibold text-slate-600 hover:text-slate-900"><i class="ph ph-arrow-clockwise mr-1"></i>Segarkan</button></div></div><div class="divide-y divide-slate-100">${cachedMessages.filter(m=>m.folder==='inbox').slice(0,3).map(m=>renderMessageCard(m)).join('') || '<div class="p-6 text-center text-sm text-slate-500">Belum ada pesan masuk.</div>'}</div></div>`;
+            });
+            renderMessageHistory();
+        }
+        function renderMessageCard(m) {
+            const isSent = m.folder === 'sent';
+            const heading = isSent ? `Kepada: ${m.recipientName || 'Penerima'}` : `Dari: ${m.senderName || 'Pengirim'}`;
+            return `<article class="p-5 ${m.isRead || isSent ? 'bg-white' : 'bg-emerald-50/50'}"><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3"><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><h4 class="font-bold text-slate-800">${escapeMessageHtml(m.subject)}</h4>${!isSent && !m.isRead ? '<span class="text-[10px] uppercase tracking-wide font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">Baru</span>' : ''}<span class="text-[10px] uppercase tracking-wide font-bold ${isSent?'bg-blue-100 text-blue-700':'bg-slate-100 text-slate-600'} px-2 py-0.5 rounded-full">${isSent?'Terkirim':'Masuk'}</span></div><p class="text-xs text-slate-500 mt-1">${escapeMessageHtml(heading)} · ${escapeMessageHtml(m.sentAt || '')}</p><p class="text-sm text-slate-700 mt-3 whitespace-pre-wrap break-words">${escapeMessageHtml(m.body)}</p></div>${!isSent && !m.isRead ? `<button onclick="markMessageRead('${escapeMessageHtml(m.id)}')" class="shrink-0 text-xs font-bold text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-2 rounded-lg">Tandai dibaca</button>` : ''}</div></article>`;
+        }
+        function renderMessageHistory() {
+            const container = document.getElementById('communication-history');
+            if (!container) return;
+            const messages = cachedMessages.filter(m => m.folder === activeMessageFolder);
+            container.innerHTML = messages.length ? messages.map(m=>renderMessageCard(m)).join('') : `<div class="p-10 text-center"><i class="ph ph-${activeMessageFolder==='sent'?'paper-plane-tilt':'tray'} text-4xl text-slate-300"></i><p class="font-semibold text-slate-600 mt-2">${activeMessageFolder==='sent'?'Belum ada pesan terkirim.':'Belum ada pesan masuk.'}</p><p class="text-xs text-slate-400 mt-1">Riwayat akan tersimpan di sini setelah ada aktivitas komunikasi.</p></div>`;
         }
         async function markMessageRead(messageId) {
             if (!currentUser || !messageId) return;
